@@ -1,0 +1,96 @@
+DEFERRED
+========
+
+Decisions taken and then put down, with enough of the reasoning to pick them up
+without re-deciding. Nothing here is a bug; the bugs get fixed. These are the
+things that are right and not yet worth doing.
+
+
+MARKDOWN AS THE REPORT SOURCE
+-----------------------------
+
+The `report` template draws an evidence pack. Its content should eventually be
+authored in Markdown rather than assembled in JSX.
+
+The mapping is nearly one-to-one, which is why this is worth doing at all.
+ReportView already takes `columns` (the cover's meta labels) and `groups` (the
+sections, which also generate the contents page), and both fall straight out of
+a parse:
+
+  frontmatter    the cover's meta grid -- standard, scope, period, prepared by
+  #              the report title
+  ##             a numbered section, and one row of the contents page
+  ###            a subheading inside a section
+  paragraph      a prose block
+  table          the bordered table the template already draws
+  - [ ]          a checklist, which maps exactly
+  ---            a page break, the one piece of pagination Markdown has
+  blockquote     a finding or a callout
+
+Three things to settle before starting, in this order.
+
+1. Plain Markdown runs out at semantics. A table is "a table" -- it cannot say
+   whether it is a findings register that links back to incident records or a
+   static evidence index that does not. Three ways to extend it, and the third
+   is the pick: MDX gives full component power and stops being authorable by a
+   customer; remark-directive (:::finding) stays close but degrades to odd text
+   elsewhere; a fenced block with a language tag needs no new syntax, is
+   valid Markdown in every renderer, and degrades to a code block rather than
+   to garbage.
+
+2. Authored and generated must not be mixed. Prose -- scope, methodology,
+   conclusions -- is Markdown. Findings, clause coverage and the evidence index
+   are generated from records and stay structured data rendered by components.
+   Serialising a findings register into pipe tables throws away the rows
+   you would need to paginate, sort or link later.
+
+3. It is a source format, not a round-trip one. Markdown to report renders
+   faithfully; report back to Markdown loses page numbers, running headers and
+   sign-off. Treat the .md as the input and the rendered pack as the
+   artefact -- and `compare` then works on report templates for free, since
+   they version like any other controlled document.
+
+Cost, and the reason this is deferred rather than done: the app has zero content
+dependencies today. This adds a parser (remark/mdast) and a sanitiser, and the
+sanitiser is not optional once customers author the text.
+
+
+ALSO PUT DOWN
+-------------
+
+Raised during the same work and decided against for now. Each is a paragraph
+rather than a project.
+
+`app` is a reserved subdomain
+    It is the no-workspace host, so a workspace slugged `app` would collide
+    with the picker. Documented in lib/host.ts and enforced by nothing. A slug
+    validator is the fix, and it wants writing at the same time as whatever
+    creates workspaces.
+
+Region grouping above 8 sites
+    The locations segment is Pinned and All locations -- until a workspace has
+    more than eight sites, when the full list splits into one group per region.
+    Nobody has hit it. Either flatten it or keep it deliberately, but the two
+    shapes should not both be a surprise.
+
+Preferences dialog width
+    Set to `md` while it still had a rail. It is `stacked` now and has about
+    13rem it no longer uses. `sm` may suit it; it is a one-word change.
+
+DocumentsView is not full bleed
+    `split` and `map` fill the card; the document tree still sits on it as a
+    card. It is a browser you look *at* rather than work *in*, which is the
+    argument for leaving it -- but the two split layouts now differ for a reason
+    that has to be remembered rather than seen.
+
+Register accordions
+    Safety, Quality and Environment each hold genuinely different record
+    types -- incidents against hazards, ITPs against NCRs -- which is the test
+    a child row has to pass. Worth doing *after* those registers hold records:
+    the right sub-rows are obvious once you can see what is in them, and
+    guessing now means guessing twice.
+
+Manifest start_url
+    `/` on a workspace host 308s to that workspace's first app, so a cold PWA
+    launch pays a redirect. Only fixable by making the manifest host-aware,
+    which a static route cannot be.

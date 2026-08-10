@@ -1,0 +1,214 @@
+BUSINESS APPLICATION DOMAINS
+============================
+
+The altitude an app tile sits at, independent of industry. Notes for deciding
+what belongs in the app switcher and what is only ever a section inside one.
+
+
+THE TEST
+--------
+
+A domain earns a tile when it has its own noun.
+
+  Operations  -> a job
+  Compliance  -> a clause
+  Workforce   -> a person
+  Financial   -> a dollar
+  Assets      -> a machine
+
+If a candidate's records turn out to be another domain's records seen from a
+new angle, it is a section or a report, not an app.
+
+
+THE CANONICAL SET
+-----------------
+
+Operations        Running the work.
+                  Scheduling, dispatch, field execution, daily records.
+
+Financial         Money in and out.
+                  Ledger, AP/AR, invoicing, budgets, payroll, reporting.
+
+Workforce         The people.
+                  Directory, hiring, onboarding, training, leave, performance.
+
+Compliance        The rules.
+                  Safety, risk, quality, environment, audit, policy.
+
+Sales             Winning customers.
+                  Pipeline, quotes, contracts, forecasting.
+
+Marketing         Reaching them.
+                  Campaigns, content, brand, events.
+
+Service           Keeping them.
+                  Tickets, SLAs, knowledge base, satisfaction.
+
+Projects          Planned work with an end.
+                  Plans, tasks, milestones, resourcing.
+
+Supply Chain      What you buy.
+                  Vendors, procurement, purchasing, logistics.
+
+Assets            What you own.
+                  Inventory, equipment, maintenance, fleet, facilities.
+
+Communication     Talking.
+                  Chat, email, meetings, announcements, intranet.
+
+Knowledge         What you know.
+                  Documents, wiki, records, templates, search.
+
+Analytics         What it all says.
+                  Dashboards, reports, forecasting, data.
+
+Legal             Obligations.
+                  Contracts, matters, IP, disputes, entities.
+
+IT & Security     The systems.
+                  Identity, access, devices, infrastructure, incidents.
+
+Admin             The platform itself.
+                  Org settings, users, roles, billing, integrations.
+
+
+THE ONES THAT BEHAVE DIFFERENTLY
+--------------------------------
+
+Communication, Knowledge and Analytics are usually cross-cutting rather than
+tiles. Every domain generates messages, documents and numbers. Giving them
+their own app creates two homes for the same thing -- a document in Knowledge
+and the same document attached to the record it belongs to. They become tiles
+only when the artefact is the point rather than the byproduct: Slack is
+Communication as a product, Notion is Knowledge as a product. Inside a business
+platform they are almost always services the other domains call.
+
+Admin is chrome, not an app. It belongs behind the org switcher.
+
+That leaves roughly eleven that hold up as genuine tiles, and no business needs
+all eleven. Most platforms ship four to seven and let the rest be sections.
+Past about eight, the switcher stops being a map and becomes a directory you
+have to read.
+
+
+BRIESA TODAY
+------------
+
+Shipped:   Operations, Compliance, Workforce
+Planned:   Commercial (project money -- cost, claims, variations, retentions)
+
+Four of the eleven, and four of the six most commonly shipped. The standard
+omissions for a delivery-side platform are Sales, Marketing and Service, which
+only matter when you sell to many customers rather than win a few contracts.
+
+HR tucks inside Workforce rather than becoming a tile: its subject is already a
+person, so licences, inductions, medicals, onboarding and leave sit beside
+People and Training. "Workforce & HR" can be the name on the pricing page
+without being a second tile in the grid.
+
+Financial does not tuck inside Workforce. Different noun (a project, not a
+person) and different buyer (the commercial manager, not the HR manager).
+Timesheets straddle and resolve as: capture in Operations, rates in Workforce,
+cost in Commercial. Payroll itself is an integration, not a build.
+
+
+LIVE QUESTIONS FOR BRIESA
+-------------------------
+
+Subcontractors    The clearest gap. There is a home for people, projects and
+(Supply Chain)    sites, but none for a company you engage. Prequalification,
+                  insurance certificates with expiry, SWMS review, licences,
+                  scope packages, performance ratings, back-charges. Nothing in
+                  the current model can hold it.
+
+Plant & Fleet     Most likely graduation. Already a section in Operations and
+(Assets)          at site level. Becomes an app with servicing schedules,
+                  prestart checks, registrations, hire in/out, utilisation.
+                  Worth it if customers are plant-heavy.
+
+Tenders /         The only pre-award domain. Everything today assumes the work
+Clients (Sales)   is won. Bids, EOIs, prequals you submit -- the mirror of
+                  Subcontractors -- client contacts, pipeline. Feeds Operations
+                  when a bid converts.
+
+Design &          Revisions, RFIs, submittals, transmittals. The biggest single
+Drawings          gap against Procore, and heavy: it makes you a document
+                  control system as well as an HSEQ one.
+
+Legal             Contracts, overlapping whatever Commercial becomes.
+
+Suggested order after Commercial: Subcontractors, then Plant & Fleet, then
+Tenders.
+
+
+GRADUATIONS RATHER THAN NEW IDEAS
+---------------------------------
+
+Already sections that could become tiles given enough surface underneath:
+
+  Quality       ITPs, hold and witness points, NCRs, defects, handover/O&M.
+  Environment   Waste, water, EPA licences, emissions reporting. Worth
+                watching given AU mandatory climate disclosure phasing in.
+  Training      Actual courses and assessments rather than a record of them.
+
+
+THINGS THAT LOOK LIKE DOMAINS AND ARE NOT
+-----------------------------------------
+
+  Insights      Reports on the others. Correct as a per-domain section; a
+                global tile would be a dashboard with a scope picker.
+  Automations   A form builder and approval chains are platform capability
+                every domain uses.
+  Incidents     Safety's records seen up close. A section.
+  Timesheets    Straddles three domains. See above.
+
+
+ADDING ONE
+----------
+
+A new domain is one entry in DOMAINS in src/lib/scope.ts plus its section
+groups. Routes, the app switcher, search scoping and the collapsed rail all
+pick it up without changes.
+
+A domain is a path segment, not a hostname -- the subdomain is the workspace.
+So a new domain needs no DNS, and its slug carries no naming constraint beyond
+being URL-safe. The tenant slug is the one that is a DNS name.
+
+
+WHY THE WORKSPACE IS THE SUBDOMAIN
+----------------------------------
+
+company-1.briesa.com/compliance/safety. The tenant is the origin and the app is
+a path segment, which is the reverse of an earlier pass and the reverse for a
+reason worth keeping written down.
+
+The origin is a boundary the browser enforces. Cookies, localStorage,
+IndexedDB, service workers and the blast radius of any injected script all stop
+at it. So the question is not "what is the product's top-level partition" but
+"what should be isolated from what", and for something sold to companies the
+answer is one company from another -- never Operations from Compliance, which
+are two navs over one company's records.
+
+Per-org settings fall out of that for free. Anything scoped to the origin is
+scoped to the workspace with no code at all: a cookie written on
+company-1.briesa.com is unreachable from company-2.briesa.com, so pinned
+sites, recent pages and the sidebar's segment are per-company without being
+keyed by company. Settings that belong to the *person* rather than to the
+workspace -- the theme, notification channels -- are the exception, and they
+say so by carrying an explicit Domain= on the parent. The default is isolation
+and sharing is the deliberate act, which is the right way round for a tenant
+boundary.
+
+On one host it ran the other way. Every per-workspace value carried its own org
+key inside a shared cookie, every reader had to remember to index it, and
+nothing but discipline stopped one company's state being read while looking at
+another's.
+
+Two costs, both accepted. The tenant slug becomes a DNS name, so a rename is a
+redirect and wants a stable id behind it -- and companies rename more often than
+products do. And unbounded hostnames need wildcard TLS plus host validation.
+
+What it buys beyond isolation: switching app is a same-origin navigation the
+router handles, which is the move people make all day; switching company is
+the document load, which is the one they rarely make. And a tenant that owns
+its origin can be given a custom domain later.

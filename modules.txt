@@ -1,0 +1,471 @@
+MODULES AND FEATURES
+====================
+
+What has to be inside each of the four domains for the product to be bought over
+what a construction company already runs. Companion to domains.txt: that file
+decides what earns a tile, this one decides what has to be behind it.
+
+Australian mid-tier contractor is the reference customer. Fifty to a thousand
+people, a handful of concurrent sites, ISO 45001/9001/14001 certified or getting
+there, principal contractor on most of its work, tendering to government and
+tier ones who audit their supply chain.
+
+
+HOW TO READ IT
+--------------
+
+Every module carries a tier and a status.
+
+  STAKES    Absent and the tool is not credible. A buyer does not thank you for
+            it; they leave the demo when it is missing.
+  PARITY    The set the incumbents ship. This is where the RFP checklist lives.
+  EDGE      Where the product is better rather than equal. Nothing here is
+            worth building before the two tiers above it in the same domain.
+
+  [x]  built — a real screen over real records
+  [~]  scaffolded — route, nav row, and the right shape with nothing in it
+  [ ]  not started — no route and no row
+
+A scaffold is more than a placeholder and less than a feature. It has the
+module's own column headings, lanes or axes, under a strip naming the tier and
+the one-line summary from this file, so the shape of the screen and the argument
+for it can both be reviewed before a line of it is real. Nothing pulses:
+a shimmer would promise records that are two seconds away.
+
+The shapes are named in src/lib/modules.ts and drawn by
+src/components/features/views. Nineteen of them, which is the whole vocabulary:
+
+  READING RECORDS
+  table       a register you filter and sort
+  board       the same records by stage
+  timeline    bars against a ruler -- lookahead, plant on hire, tickets expiring
+  calendar    a month, for anything booked into a slot
+  map         where things are -- pinned defects, plant, photos on a plan
+  matrix      one axis against another -- risk heat, competency, permissions
+  cards       a grid of things identified by a picture rather than a name
+  gallery     photos, by the day they were taken
+  feed        what happened, newest first, down a rail
+  dashboard   tiles over charts
+  overview    an app's front page: real tiles, real links, an activity rail
+
+  ONE RECORD
+  record      an entity open -- identity, facts, body, activity
+  split       a list beside the one it has selected
+  documents   a folder tree beside what is in the open folder
+
+  DOING SOMETHING
+  checklist   an inspection or an ITP, answered row by row
+  wizard      something issued through steps -- a permit, an induction
+  form        settings, in sections
+
+  HANDING SOMETHING OVER
+  report      an evidence pack, shaped like the paper it becomes
+  compare     two versions side by side, with what changed marked
+
+The four groups are the honest division: most of the app is ways of reading a
+register, and the templates that are not are the ones worth counting. A product
+that only ever renders tables is a product that only ever reports.
+
+A module with two readings gets both, as a segmented control in the page header
+— Defects is a board and a list, Risk is a register and a matrix. Only at org
+level: the fourth path position is spent on the section once the third is a
+site, so a site gets the one reading `siteView` names, which is usually the
+narrower one.
+
+
+WHO WE ARE MEASURED AGAINST
+---------------------------
+
+Procore            The gravity well. Project management, drawings, RFIs,
+                   financials, a marketplace. Priced for tier one and sold on
+                   being the single system. Beaten on price, on time-to-value,
+                   and on being built for how AU compliance actually works —
+                   not beaten on breadth. Do not try.
+
+HammerTech         The closest AU comparison. Site-safety-first: inductions,
+                   permits, plant, prestarts, sign-on. Strong where the site
+                   gate is. Weaker as a management system above the site.
+
+SafetyCulture      Checklists as a product. Enormous install base because the
+                   free tier is genuinely useful. Anything we ship that is
+                   "a form on a phone" is compared to this and must not lose.
+
+Damstra / Rapid    Workforce access, contractor prequal, inductions, e-learning.
+                   The compliance gate as a service. Often already in the stack
+                   and often the integration rather than the competitor.
+
+Assignar           Field ops for self-perform and subcontractors: scheduling,
+                   plant, timesheets, compliance on the crew. The closest thing
+                   to our Operations tile.
+
+Sitemate Dashpivot Forms, site diaries, ITPs. Flexible, fast, generic.
+
+myosh / Donesafe   EHS as enterprise software. Registers, workflow, audit.
+                   Heavy, configurable, slow to implement.
+
+Raken, Fieldwire   Daily reports and task-level field execution. US-centric.
+
+Cm3, Avetta        Prequalification networks. Integrate, do not rebuild.
+
+Spreadsheets       Still the market leader. Every module below is competing
+                   with a shared drive and someone diligent, and losing to
+                   those two is the normal way for this to fail.
+
+
+-------------------------------------------------------------------------------
+OPERATIONS  ·  the noun is a job
+-------------------------------------------------------------------------------
+
+Running the work. Everything below has a date, a place and a crew attached.
+
+STAKES
+
+[~] Projects              Register with status, client, contract value, dates,
+                          the site it runs on. The spine every other record
+                          hangs off -- and the first entity besides a site the
+                          nav can open: the row expands to the jobs under it,
+                          each with a page of its own.
+[x] Sites                 Per-site landing, and a first class scope rather than
+                          a filter on projects: crews, plant and obligations sit
+                          at a place even when the project list churns. Reached
+                          from the panel's Locations segment; the index page it
+                          also had was that list a second time, in a worse spot.
+[~] Site diary            One entry per site per day: weather pulled not typed,
+                          crew on site, plant on site, work done, delays,
+                          visitors, photos. Locked at end of day and versioned
+                          after. This is the record that wins disputes, so it
+                          has to be the fastest screen in the product.
+[~] Access & attendance    Who is on site right now, by sign-on. Manual, QR at
+                          the gate, or a turnstile feed. Muster report that
+                          works with no signal, because the moment it is needed
+                          is the moment the network is congested.
+[~] Assets & plant        Register of owned and hired plant, where it is,
+                          prestart checks, servicing due, registration and
+                          insurance expiry, off-hire dates. Hire costs leaking
+                          on idle plant is a number the site manager can feel.
+[~] Daily task / lookahead Three-week lookahead by crew and by site. The
+                          scheduling layer between a Gantt nobody opens and a
+                          whiteboard in the shed.
+[~] Timesheets            Capture here, rates in Workforce, cost in Commercial —
+                          see domains.txt. Capture means: crew, hours, cost
+                          code, allowances, on a phone, offline, approved by the
+                          supervisor before it leaves the site.
+
+PARITY
+
+[~] Board                 Kanban by stage — tendered through closed. A second reading
+                          of the register above, not a module of its own.
+[~] Defects & punch lists Location-pinned, photo-evidenced, assigned, aged.
+                          Overlaps Quality's NCRs deliberately: a defect is the
+                          site's word and an NCR is the system's, and the record
+                          is the same one seen from two domains.
+[~] Deliveries & logistics Booking a crane, a gate, a slot. Small feature,
+                          disproportionate daily use.
+[~] Progress claims input  Quantities and percentages captured at the site,
+                          handed to Commercial when it exists.
+[~] Photos                A real gallery: by site, by date, by tag, by pin on a
+                          plan. Every competitor has one and every customer's
+                          is a phone camera roll.
+[~] Insights              Hours, delays, plant utilisation, open defects,
+                          diary completion rate by site.
+
+EDGE
+
+[ ] Offline as the default Not a sync mode you turn on. The diary, prestarts,
+                          sign-on and timesheets have to work in a lift well and
+                          reconcile without the user thinking about it. Most
+                          field tools claim this and degrade to a spinner.
+[ ] The day, assembled    One screen per site per morning that already knows
+                          weather, crew rostered, plant on hire, permits open,
+                          inductions expiring today and yesterday's unclosed
+                          items. Competitors ship the parts and let the
+                          supervisor assemble them at 6am.
+[ ] Evidence by default   Every field action emits a timestamped, geotagged,
+                          attributed record that Compliance can cite without
+                          anyone re-entering it. See WHERE WE WIN.
+
+
+-------------------------------------------------------------------------------
+COMPLIANCE  ·  the noun is a clause
+-------------------------------------------------------------------------------
+
+The rules. Strongest domain today and the reason to buy the product.
+
+STAKES
+
+[~] Safety register       Incidents, near misses, hazards, injuries. Severity,
+                          investigation, ICAM or 5-why, corrective actions with
+                          owners and dates, regulator notifiability flagged at
+                          entry rather than remembered. Notifiable incident
+                          under s38 is a clock, and the tool should be the thing
+                          that starts it.
+[~] Risk register         Hierarchy of control, residual scoring, review dates,
+                          links from a risk to the SWMS and the controls that
+                          treat it.
+[~] Quality register      ITPs with hold and witness points, NCRs, inspection
+                          records, handover and O&M packs. ITPs are the reason
+                          quality software gets bought and the part most safety
+                          tools skip.
+[~] Environment register  Waste, water, dust, noise, spills, EPA licence
+                          conditions and their reporting dates.
+[~] SWMS                  Not a document store — a live SWMS. Written against
+                          the 18 high risk construction work activities, tied to
+                          the risk register, versioned, acknowledged by every
+                          worker who does that task on that site, reviewable
+                          when the method changes. Subcontractor SWMS reviewed
+                          and accepted through the same screen.
+[~] Permits to work        Hot work, confined space, live electrical, excavation,
+                          working at height, crane lifts. Issued, time-boxed,
+                          closed. Expiry visible at the gate.
+[~] Inspections & audits   Templated, scheduled, scored, assigned. This is the
+                          SafetyCulture surface and it has to be as fast as
+                          SafetyCulture or the comparison is fatal.
+[~] Documents             Controlled documents: version, owner, review date,
+                          acknowledgement, superseded copies unreachable.
+                          Document control is what turns a drive into a system.
+[~] ISO blueprints        45001 / 9001 / 14001 on the harmonised structure, one
+                          clause against every standard that shares it. A row in
+                          Compliance's Records group like any other -- it was
+                          filed as an add-on for a while, which made a section
+                          look like something sold separately.
+
+PARITY
+
+[~] Corrective actions    One queue across every register. An action raised from
+                          an incident, an audit finding, an NCR or an inspection
+                          is the same object with the same escalation.
+[~] Toolbox talks         Scheduled, delivered, attendance captured on site.
+[~] Chemicals / SDS       Register with SDS currency (five-year rule) and
+                          site-level manifests.
+[~] Emergency & first aid Plans, wardens, drills, kit checks per site.
+[~] Contractor compliance Insurances, licences, prequal status. Interim home
+                          until Subcontractors becomes its own domain.
+[~] Insights              Lead and lag indicators: TRIFR, LTIFR, open action
+                          ageing, audit scores, inspection coverage, close-out
+                          rate by site.
+
+EDGE
+
+[ ] Clause coverage, live The blueprint stops being a reference document and
+                          becomes a dashboard: each clause shows the real
+                          records satisfying it right now, and where the
+                          evidence has gone stale. One control closing a clause
+                          in three certifications at once is already the data
+                          model — this is the screen that cashes it in.
+[ ] Audit mode            Generate the evidence pack for a surveillance audit,
+                          a client HSE audit or an FSC audit from live records,
+                          scoped to a standard, a site or a date range. The week
+                          before an audit is the most painful week of the
+                          compliance manager's year and it is entirely
+                          mechanical.
+[ ] Obligation calendar   Every dated obligation in one place — licence renewals,
+                          EPA reporting, plant registrations, insurance expiry,
+                          document reviews, drill schedules — with one
+                          escalation policy rather than nine reminder settings.
+[ ] Regulatory currency   Codes of practice and their state variations tracked
+                          by us, not by the customer. Psychosocial hazards,
+                          silica, engineered stone, WA and VIC divergence from
+                          harmonised WHS. Every AU competitor sells "compliance"
+                          and makes the customer own currency.
+
+
+-------------------------------------------------------------------------------
+WORKFORCE  ·  the noun is a person
+-------------------------------------------------------------------------------
+
+The people, and HR beside them. One person record, not three.
+
+STAKES
+
+[~] People directory      Employees, labour hire and subcontractor workers in
+                          one register, differentiated by engagement type rather
+                          than by living in different systems. Emergency
+                          contacts, next of kin, photo, current site.
+[~] Training & tickets    White card, HRW licences, EWP, confined space, first
+                          aid, VOCs, inductions. Expiry is the whole feature:
+                          what has lapsed, what lapses in thirty days, and who
+                          is rostered tomorrow with an expired ticket.
+[~] Inductions            Company, site and task inductions delivered before the
+                          gate, versioned, with a pass mark and a record. The
+                          Damstra/Rapid surface, and the one most often already
+                          bought — build it, and integrate for the sites where
+                          the client mandates someone else's.
+[~] Onboarding            Offer through first day: documents, policies, PPE
+                          issue, super and TFN, licence collection. Half of this
+                          is compliance evidence wearing an HR hat.
+[~] Competency matrix     Who is qualified for what, by role and by task, read
+                          straight by scheduling and by SWMS acknowledgement.
+
+PARITY
+
+[~] Leave & availability   Requests, approvals, balances, RDO calendars.
+[~] Performance & reviews  Light. Nobody switches platforms for this.
+[~] Medicals & fitness     Pre-employment, periodic, D&A testing, restrictions
+                          and return-to-work plans.
+[~] Injury management      Workers comp claims, return-to-work, suitable duties.
+                          Sits between Workforce and Safety and must not
+                          duplicate the incident.
+[~] PPE & issued items     What was issued to whom and when.
+[~] Rates & awards         Award interpretation for MA000020 and EBAs, allowances,
+                          site allowances, portable long service. Feeds cost
+                          when Commercial exists; payroll itself is an
+                          integration.
+[~] Insights              Headcount, turnover, expiring competencies, training
+                          spend, induction coverage by site.
+
+EDGE
+
+[ ] One person, one record The worker who is inducted, ticketed, rostered,
+                          signed on, injured and paid is one row. Competitors
+                          split this across an HR system, an induction vendor,
+                          an access system and a payroll — reconciled by
+                          spreadsheet monthly. Holding it once is the single
+                          most defensible thing this domain can do.
+[ ] Gate-ready            Answer "can this person work on this site tomorrow" in
+                          one call: ticket currency, induction for that site,
+                          SWMS acknowledged, medical restrictions, right to
+                          work. Blocked before the roster goes out rather than
+                          discovered at the gate.
+[ ] Subcontractor workers  First class, not second. Most of the workforce on a
+                          mid-tier site is not employed by the customer, and
+                          most tools treat those people as guests.
+
+
+-------------------------------------------------------------------------------
+ADMIN  ·  the noun is the tenant
+-------------------------------------------------------------------------------
+
+The platform itself. Not sold, but lost on: procurement and IT kill deals here.
+
+STAKES
+
+[~] Organisation settings Legal entity, ABN, branding, timezone, financial year,
+                          state defaults where WHS diverges.
+[~] Members               Invite, deactivate, transfer ownership. Deactivation
+                          has to be instant and total — a departed supervisor
+                          with a live phone is an audit finding.
+[~] Roles & permissions   Role by domain and by site, not one global role. A
+                          site manager on two of six sites is the normal case
+                          and the case most tools cannot express.
+[~] Audit log             Who changed what, when, from where. Immutable. This is
+                          a compliance control, not a nice-to-have.
+[~] Billing               Plan, seats, invoices, entitlement per domain — the
+                          `apps` list is already the entitlement.
+[~] Integrations          Connections, keys, sync status, last error, retry.
+
+PARITY
+
+[~] SSO and SCIM          Entra ID and Google. Enterprise procurement asks on
+                          the first call and disqualifies on the answer.
+[~] Data residency        AU hosting, stated plainly, with the subprocessor
+                          list.
+[~] Export & portability  Full tenant export. Refusing this reads as lock-in and
+                          costs more deals than it saves.
+[~] Retention policies    How long records live, per record type, defensibly.
+[ ] Custom fields         Per-tenant fields on the core records, without a
+                          consultant.
+[ ] Templates & forms     A form builder every domain calls — see cross-cutting.
+
+EDGE
+
+[ ] Configuration as data  A new domain is one entry in DOMAINS; the same should
+                          be true of a register, a form or a role. Whatever a
+                          professional services team would otherwise do by hand
+                          is either self-serve or it is a margin leak.
+[ ] Sandbox               A copy of the tenant to try a workflow change against
+                          before it reaches six sites.
+
+
+-------------------------------------------------------------------------------
+CROSS-CUTTING  ·  services the four domains call
+-------------------------------------------------------------------------------
+
+Not tiles. domains.txt is explicit about why: giving Communication, Knowledge or
+Analytics its own app creates two homes for the same artefact. They still have
+to be built, and each one is built once.
+
+[ ] Forms & workflow      One builder, one renderer, one approval chain. Every
+                          register above is a specialisation of it. Build this
+                          badly and every module pays for it forever.
+[ ] Mobile & offline      A field app, not a responsive page. See Operations.
+[ ] Documents & storage   Versioning, acknowledgement, retention, links from any
+                          record to any document, once.
+[ ] Notifications         Digest, escalation, on-call. One policy engine, not a
+                          preference toggle per module.
+[x] Search                Already scoped by domain and site in the sidebar.
+                          Needs records behind it.
+[~] Insights              A dashboard with a scope picker, rendered per domain.
+[ ] Automations           If a licence expires in 30 days, then. Platform
+                          capability, per domain.
+[ ] API & webhooks        Public, documented, versioned. The integration story
+                          is how payroll, accounting, prequal networks and the
+                          client's own systems stay out of scope.
+[ ] AI where it earns it   Three places it is worth it and nowhere else: writing
+                          the incident narrative from the field capture,
+                          extracting expiry dates and licence numbers from a
+                          photographed ticket or certificate, and answering
+                          "where is the evidence for clause 8.1" against the
+                          tenant's own records. Anything else is a demo.
+
+
+WHERE WE WIN
+------------
+
+Parity is table stakes and table stakes do not win a switch. Four things are
+ours to be better at, and they compound:
+
+1.  One record, many obligations. The blueprint already stores a clause once and
+    tags it with the standards that share it. Extend that to evidence and the
+    product answers "are we compliant" continuously instead of in the fortnight
+    before a surveillance audit. Nobody in the AU mid-market does this well.
+
+2.  Evidence as a byproduct. The compliance artefact should fall out of doing
+    the work — a prestart is plant evidence, a sign-on is induction evidence, a
+    diary entry is a delay claim. Every competitor makes compliance a second
+    job performed after the first one.
+
+3.  One workforce record across employment, competency, access and injury.
+    Structurally hard for the incumbents, because their equivalent lives in
+    three vendors.
+
+4.  Four navs, one product. The switcher is not cosmetic: the safety manager,
+    the site manager and the HR coordinator each see one app, and the data
+    underneath is the same. Suites feel like four logins; single apps feel like
+    somebody else's job is missing.
+
+
+WHAT WE ARE NOT BUILDING
+------------------------
+
+Saying no is what keeps the four tiles legible.
+
+  Payroll            Regulated, solved, low margin. Integrate.
+  Accounting / ERP   Integrate. Commercial is project money, not the ledger.
+  Drawings / BIM     The Procore and Aconex moat. Revisit only with Design &
+                     Drawings, and only if it is unavoidable.
+  Estimating         Pre-award, different buyer, different product.
+  A messaging app    Comments on records, yes. A chat product, no.
+  Prequal networks   Cm3 and Avetta are networks; the value is the other side of
+                     the market. Integrate.
+
+
+THE ORDER
+---------
+
+Ordered by what makes the next module cheaper, not by what demos best.
+
+  1.  Forms and workflow, and offline capture. Everything below is an instance
+      of the first and useless without the second.
+  2.  Compliance registers made real — safety, risk, quality, environment —
+      then corrective actions as one queue across them.
+  3.  Site diary, prestarts, sign-on. The daily habit. Without a reason to open
+      the app every morning, the registers go stale and the renewal is lost.
+  4.  Workforce currency: tickets, inductions, expiry, gate-ready.
+  5.  SWMS and permits, which need 1, 2 and 4 to exist first.
+  6.  Clause coverage and audit mode. The differentiator, built on top of a year
+      of real records rather than demonstrated against fixtures.
+  7.  Admin's enterprise tail — SSO, SCIM, export — timed to the first deal that
+      requires it, and not before.
+
+Commercial, Subcontractors, Plant & Fleet and Tenders are new domains rather
+than modules, and their order is in domains.txt.

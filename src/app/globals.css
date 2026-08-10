@@ -1,0 +1,247 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  /* One step below `text-xs`, for the version tag beside the wordmark — small
+     enough to read as an annotation rather than as a second label. Enables the
+     `text-2xs` utility. */
+  --text-2xs: 0.625rem;
+  --text-2xs--line-height: 0.875rem;
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+  --color-fill: var(--fill);
+  --color-fill-strong: var(--fill-strong);
+}
+
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  /**
+   * The one chromatic token in a palette that is otherwise all greys.
+   *
+   * `blue-600` and `blue-500` exactly — the same scale the notification dot is
+   * drawn from, so "the accent" is one colour with one set of steps rather than
+   * a token that happens to look like a utility class. Held identical in both
+   * themes: a hue this saturated does not need re-picking for a dark ground the
+   * way a grey does, and one value means a primary button is recognisably the
+   * same button after a theme switch.
+   *
+   * `--ring` is the lighter 500. It is drawn as a halo at `/50` around a border
+   * of itself, so it has to read against the *control*, where 600 went muddy;
+   * and it is the one place the accent is doing pure work — saying where the
+   * keyboard is — rather than saying anything about the brand.
+   */
+  --primary: oklch(54.6% 0.245 262.881);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(62.3% 0.214 259.815);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(54.6% 0.245 262.881);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(62.3% 0.214 259.815);
+
+  /* The chrome fills — a hovered row, a segmented control's trough, the tile
+     behind a nav glyph, an avatar. Their own tokens rather than `muted` at an
+     alpha, because alpha is exactly what broke them: light's greys all sit
+     between 0.97 and 1.0, so `muted/50` over a 0.985 sidebar was a 0.0075 step
+     and read as nothing, while the same class in dark was a 0.065 step and read
+     fine. One class cannot be right on both when the gap it needs is a fixed
+     distance and the palette's own gaps are not.
+     Opaque, too: these stack (a tile inside a row inside a trough), and
+     half-opaque greys over one another compound into a patch nobody chose. */
+  --fill: oklch(0.955 0 0);
+  --fill-strong: oklch(0.925 0 0);
+}
+
+/**
+ * While the window is being dragged, nothing animates.
+ *
+ * The shell's transitions exist for *commands* — collapsing the nav, opening the
+ * secondary panel, a page reaching the end of its scroll. Crossing a breakpoint
+ * changes the same computed values, so without this the layout eases into its
+ * new shape over 200ms while the pointer is still moving, and the card, the rail
+ * and the shelf all lag the window edge by a different amount.
+ *
+ * A document attribute rather than a React flag: it costs no render, and it
+ * catches every transition in the tree rather than only the three the shell
+ * happens to declare. The same trick next-themes uses when swapping palettes.
+ */
+[data-resizing],
+[data-resizing] *,
+[data-resizing] *::before,
+[data-resizing] *::after {
+  transition: none !important;
+}
+
+.dark {
+  /**
+   * One ramp, lightest-on-top, in Notion's dark tones:
+   *
+   *   #191919  0.213  the root / the rails        `--sidebar`
+   *   #202020  0.243  the page                    `--background`
+   *   #252525  0.265  a card, a menu, a dialog    `--card`, `--popover`
+   *   #2d2d2d  0.298  a fill                      `--fill`
+   *   #2f2f2f  0.306  a menu row under the cursor `--accent`
+   *   #383838  0.341  a stronger fill             `--fill-strong`
+   *
+   * Monotonic, and the root is the floor of it: every surface in the app is at
+   * or above the ground it sits on, so depth reads one way everywhere — further
+   * forward is lighter, without exception. The page card is the first step up
+   * from the root, and each thing that lands on the page takes another.
+   *
+   * `--sidebar` is the root, not just the nav — see the `body` rule below, which
+   * paints the whole document with it.
+   */
+  --background: oklch(0.243 0 0);
+  /* Not 0.985. Notion's body text is white at ~81%, and on a ground this dark
+     pure white blooms — the glyph edges smear on a subpixel display and long
+     text reads as glare. Still 11:1 on the page. */
+  --foreground: oklch(0.87 0 0);
+  /* Lifted clear of the page, and of the root as well: a card sits above both
+     surfaces it can appear on. */
+  --card: oklch(0.265 0 0);
+  --card-foreground: oklch(0.87 0 0);
+  /* Level with `--card`, as it has always been. A dialog is a card that arrived
+     from somewhere else, and the two are held equal on purpose: the dialogs put
+     `bg-card` panels and a `bg-fill` footer tray *inside* a `bg-popover` shell,
+     so those tokens have to keep their relationship to the popover as well. Set
+     a step above the card and the footer inverts into a recess you can't see. */
+  --popover: oklch(0.265 0 0);
+  --popover-foreground: oklch(0.87 0 0);
+  /* The same two blues as light — see the note there. */
+  --primary: oklch(54.6% 0.245 262.881);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.306 0 0);
+  --secondary-foreground: oklch(0.87 0 0);
+  --muted: oklch(0.306 0 0);
+  /* Notion's secondary text is white at ~46%, which lands near 0.61. Held a
+     little brighter than that because this token is routinely dimmed again by
+     the callers — `text-muted-foreground/70` on group headings,
+     `/55` on the chrome buttons — and 0.61 under a 0.55 is not text any more. */
+  --muted-foreground: oklch(0.67 0 0);
+  /* The menu row under the cursor, so it is read against `--popover` rather
+     than against the page — Notion's own hover tone, a step above the menu. */
+  --accent: oklch(0.306 0 0);
+  --accent-foreground: oklch(0.87 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 9%);
+  --input: oklch(1 0 0 / 14%);
+  --ring: oklch(62.3% 0.214 259.815);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --sidebar: oklch(0.213 0 0);
+  --sidebar-foreground: oklch(0.87 0 0);
+  --sidebar-primary: oklch(54.6% 0.245 262.881);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  /* Above every ground they can land on — the page, the root, a card — so a
+     fill means one thing everywhere: this patch is lit. They used to straddle
+     the card (fill below it, fill-strong above), which made `bg-fill` read as a
+     hole punched in a card and a highlight on the nav in the same breath. */
+  --fill: oklch(0.298 0 0);
+  --fill-strong: oklch(0.341 0 0);
+  --sidebar-accent: oklch(0.298 0 0);
+  --sidebar-accent-foreground: oklch(0.87 0 0);
+  --sidebar-border: oklch(1 0 0 / 9%);
+  --sidebar-ring: oklch(62.3% 0.214 259.815);
+}
+
+/* A scrollbar that stays out of the way inside the sidebar and the search
+   modal — narrow, and only tinted enough to find. */
+@utility thin-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  /* The root, the gutters around the card and the rail are all one surface —
+     `--sidebar`. The card is the only thing that gets its own colour, so
+     `--background` now means "inside the page" rather than "behind
+     everything". Leaving the root on `--background` put the darker of the two
+     under a shell painted the lighter one, which only ever showed as a flash
+     of the wrong colour on overscroll. */
+  /* Painted on `html` as well as `body`. The body's background does propagate
+     to the canvas when the root has none, but iOS paints the region *outside*
+     the viewport — behind the home indicator, behind a collapsed toolbar — from
+     the root, and an unpainted root there is the black strip. */
+  html {
+    @apply bg-sidebar font-sans;
+    /* Nothing here about overflow. The document has to scroll for Safari to
+       collapse its toolbar, and both `overflow` and `overscroll-behavior`
+       propagate from the root to the viewport — an `overscroll-behavior: none`
+       in particular can have the browser treat a short scroll as an overscroll
+       and refuse it, which is the one gesture this layout depends on. */
+  }
+  body {
+    @apply bg-sidebar text-foreground;
+  }
+}
