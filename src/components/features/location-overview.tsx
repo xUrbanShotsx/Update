@@ -53,9 +53,6 @@ export function LocationOverview({
   const tags: PageTag[] = [
     { label: domain.label, tone: "solid" },
     { label: location.region, tone: "muted" },
-    // The tiles and the record are real; the roster and the activity rail are
-    // not. The marker stays until all of it is.
-    { label: "Scaffold", tone: "outline" },
   ]
 
   return (

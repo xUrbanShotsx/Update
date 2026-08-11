@@ -726,21 +726,22 @@ export const MODULES: Record<string, Module> = {
     tier: "stakes",
     views: [
       {
-        label: "ITPs",
-        kind: "checklist",
-        groups: ["Earthworks — ITP-04", "Concrete — ITP-11", "Structural steel — ITP-19"],
-      },
-      {
         slug: "list",
         label: "Register",
         kind: "table",
         columns: ["Ref", "Item", "Lot", "Site", "Point", "Inspected", "Result", "Status"],
       },
+      {
+        label: "ITPs",
+        kind: "checklist",
+        groups: ["Earthworks — ITP-04", "Concrete — ITP-11", "Structural steel — ITP-19"],
+      },
     ],
     siteView: {
+      slug: "list",
       label: "Quality",
-      kind: "checklist",
-      groups: ["Earthworks — ITP-04", "Concrete — ITP-11", "Structural steel — ITP-19"],
+      kind: "table",
+      columns: ["Ref", "Item", "Lot", "Site", "Point", "Inspected", "Result", "Status"],
     },
   },
 
@@ -977,6 +978,12 @@ export const MODULES: Record<string, Module> = {
     tier: "stakes",
     views: [
       {
+        slug: "list",
+        label: "Schedule",
+        kind: "table",
+        columns: ["Inspection", "Template", "Site", "Assigned", "Due", "Score", "Status"],
+      },
+      {
         label: "Inspection",
         kind: "checklist",
         groups: [
@@ -987,23 +994,12 @@ export const MODULES: Record<string, Module> = {
           "Housekeeping",
         ],
       },
-      {
-        slug: "list",
-        label: "Schedule",
-        kind: "table",
-        columns: ["Inspection", "Template", "Site", "Assigned", "Due", "Score", "Status"],
-      },
     ],
     siteView: {
+      slug: "list",
       label: "Inspections",
-      kind: "checklist",
-      groups: [
-        "Site establishment",
-        "Access and egress",
-        "Plant and equipment",
-        "Working at height",
-        "Housekeeping",
-      ],
+      kind: "table",
+      columns: ["Inspection", "Template", "Site", "Assigned", "Due", "Score", "Status"],
     },
   },
 

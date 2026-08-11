@@ -116,9 +116,6 @@ export function OrgOverview({
   const tags: PageTag[] = [
     { label: domain.label, tone: "solid" },
     { label: VIEW_LABELS.overview, tone: "muted" },
-    // The tiles, the sites and the projects are real; the activity rail is not.
-    // The marker stays until all of it is.
-    { label: "Scaffold", tone: "outline" },
   ]
 
   return (

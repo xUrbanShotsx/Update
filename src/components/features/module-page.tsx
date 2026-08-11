@@ -10,6 +10,9 @@
  * produce a page that says so, not a crash.
  */
 
+import { PhotosGallery } from "@/components/features/photos-gallery"
+import { QualityRegister } from "@/components/features/quality-register"
+import { TimesheetsGrid } from "@/components/features/timesheets-grid"
 import { ActionsList } from "@/components/features/actions-list"
 import { ChemicalsRegister } from "@/components/features/chemicals-register"
 import { ContractorsRegister } from "@/components/features/contractors-register"
@@ -108,7 +111,6 @@ const TIER_TONE: Record<Tier, NonNullable<PageTag["tone"]>> = {
 const moduleTags = (module: Module, view: ModuleView): PageTag[] => [
   { label: TIER_LABELS[module.tier], tone: TIER_TONE[module.tier] },
   { label: VIEW_LABELS[view.kind], tone: "muted" },
-  { label: "Scaffold", tone: "outline" },
 ]
 
 /** The catalogue's shapes, as components. Exhaustive over `ViewKind`, so adding
@@ -229,6 +231,18 @@ export function renderView(view: ModuleView, moduleKey?: string) {
   // Compliance — document management library.
   if (moduleKey === "compliance/documents" && view.kind === "documents") {
     return <DocumentsLibrary />
+  }
+  // Compliance — quality / ITP register.
+  if (moduleKey === "compliance/quality" && view.kind === "table") {
+    return <QualityRegister />
+  }
+  // Operations — weekly timesheet grid.
+  if (moduleKey === "operations/timesheets" && view.kind === "grid") {
+    return <TimesheetsGrid />
+  }
+  // Operations — site photo gallery.
+  if (moduleKey === "operations/photos" && view.kind === "gallery") {
+    return <PhotosGallery />
   }
   switch (view.kind) {
     case "board":
