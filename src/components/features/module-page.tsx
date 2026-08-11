@@ -10,6 +10,7 @@
  * produce a page that says so, not a crash.
  */
 
+import { SafetyBoard } from "@/components/features/safety-board"
 import { SwmsWizard } from "@/components/features/swms-wizard"
 import {
   BoardView,
@@ -94,6 +95,10 @@ export function renderView(view: ModuleView, moduleKey?: string) {
   // SWMS Issue wizard is the AI generation flagship — render it directly.
   if (moduleKey === "compliance/swms" && view.slug === "issue") {
     return <SwmsWizard />
+  }
+  // Safety Board shows real incident cards, not scaffold bars.
+  if (moduleKey === "compliance/safety" && view.kind === "board") {
+    return <SafetyBoard />
   }
   switch (view.kind) {
     case "board":
