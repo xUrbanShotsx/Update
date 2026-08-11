@@ -11,11 +11,16 @@
  */
 
 import { ActionsList } from "@/components/features/actions-list"
+import { AssetsRegister } from "@/components/features/assets-register"
+import { ClaimsRegister } from "@/components/features/claims-register"
 import { DefectsBoard } from "@/components/features/defects-board"
+import { DeliveriesList } from "@/components/features/deliveries-list"
+import { DiaryFeed } from "@/components/features/diary-feed"
 import { InspectionsSchedule } from "@/components/features/inspections-schedule"
 import { ProjectsTable } from "@/components/features/projects-table"
 import { RiskRegister } from "@/components/features/risk-register"
 import { SafetyBoard } from "@/components/features/safety-board"
+import { SiteAccessTable } from "@/components/features/site-access-table"
 import { SwmsWizard } from "@/components/features/swms-wizard"
 import { ToolboxTalks } from "@/components/features/toolbox-talks"
 import {
@@ -129,6 +134,26 @@ export function renderView(view: ModuleView, moduleKey?: string) {
   // Defects board — NCR/defects kanban, location-pinned and assigned.
   if (moduleKey === "operations/defects" && view.kind === "board") {
     return <DefectsBoard />
+  }
+  // Site diary feed — one entry per site per day.
+  if (moduleKey === "operations/diary" && view.kind === "feed") {
+    return <DiaryFeed />
+  }
+  // Site access / attendance register.
+  if (moduleKey === "operations/access" && view.kind === "table") {
+    return <SiteAccessTable />
+  }
+  // Deliveries list — gate bookings and slot management.
+  if (moduleKey === "operations/deliveries" && view.slug === "list") {
+    return <DeliveriesList />
+  }
+  // Plant and equipment register.
+  if (moduleKey === "operations/assets" && view.kind === "table") {
+    return <AssetsRegister />
+  }
+  // Progress claims register.
+  if (moduleKey === "operations/claims" && view.slug === "list") {
+    return <ClaimsRegister />
   }
   switch (view.kind) {
     case "board":
