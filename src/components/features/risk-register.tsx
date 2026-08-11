@@ -1,5 +1,6 @@
 import { PageScroll } from "@/components/shared/page-scroll"
 import { Frame, Toolbar } from "@/components/features/views/primitives"
+import { AddSheet, type FieldDef } from "@/components/shared/add-sheet"
 import { cn } from "@/lib/utils"
 
 type RiskLevel = "Low" | "Medium" | "High" | "Extreme"
@@ -187,6 +188,105 @@ const RISKS: Risk[] = [
   },
 ]
 
+const RISK_FIELDS: readonly FieldDef[] = [
+  { name: "s1", label: "Hazard details", type: "section" },
+  {
+    name: "hazard",
+    label: "Hazard description",
+    type: "text",
+    required: true,
+    placeholder: "What is the hazard or unsafe condition",
+  },
+  {
+    name: "category",
+    label: "Hazard category",
+    type: "select",
+    required: true,
+    options: [
+      "Working at height",
+      "Plant and equipment",
+      "Excavation and trenching",
+      "Confined space",
+      "Hot work / welding",
+      "Electrical",
+      "Traffic management",
+      "Crane / rigging",
+      "Manual handling",
+      "Hazardous chemicals",
+      "Noise and vibration",
+      "Environmental",
+      "Other",
+    ],
+  },
+  {
+    name: "site",
+    label: "Site",
+    type: "select",
+    required: true,
+    options: [
+      "Melbourne Depot",
+      "Sydney Yard",
+      "Brisbane Terminal",
+      "Perth Workshop",
+      "Adelaide Depot",
+      "Geelong Site",
+      "All sites",
+    ],
+  },
+  { name: "s2", label: "Risk assessment", type: "section" },
+  {
+    name: "inherent_risk",
+    label: "Inherent risk (before controls)",
+    type: "select",
+    required: true,
+    options: ["Extreme", "High", "Medium", "Low"],
+  },
+  {
+    name: "hoc",
+    label: "Hierarchy of control",
+    type: "select",
+    required: true,
+    options: [
+      "Elimination",
+      "Substitution",
+      "Isolation",
+      "Engineering controls",
+      "Administrative controls",
+      "PPE",
+    ],
+  },
+  {
+    name: "controls",
+    label: "Control measures",
+    type: "textarea",
+    required: true,
+    rows: 4,
+    placeholder: "Describe the controls to be applied…",
+  },
+  {
+    name: "residual_risk",
+    label: "Residual risk (after controls)",
+    type: "select",
+    required: true,
+    options: ["High", "Medium", "Low"],
+  },
+  { name: "s3", label: "Ownership", type: "section" },
+  {
+    name: "legislation",
+    label: "Legislation / code reference",
+    type: "text",
+    placeholder: "e.g. WHS Reg 2017 r.78, CoP Working at Heights",
+  },
+  {
+    name: "owner",
+    label: "Risk owner",
+    type: "text",
+    required: true,
+    placeholder: "Full name or role",
+  },
+  { name: "review_date", label: "Review date", type: "date", required: true },
+]
+
 export function RiskRegister() {
   const extreme = RISKS.filter((r) => r.residual === "Extreme").length
   const high = RISKS.filter((r) => r.residual === "High").length
@@ -197,6 +297,11 @@ export function RiskRegister() {
     <PageScroll overflows>
       <Frame>
         <Toolbar filters={3} />
+
+        <div className="mb-4 flex items-center justify-between">
+          <p className="text-xs text-muted-foreground">Register overview</p>
+          <AddSheet title="Risk" fields={RISK_FIELDS} />
+        </div>
 
         <div className="mt-4 grid grid-cols-4 gap-2">
           {[

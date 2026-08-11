@@ -1,6 +1,7 @@
 import { PageScroll } from "@/components/shared/page-scroll"
 import { Frame, Toolbar } from "@/components/features/views/primitives"
 import { cn } from "@/lib/utils"
+import { AddSheet, type FieldDef } from "@/components/shared/add-sheet"
 
 type Engagement = "Employee" | "Labour hire" | "Subcontractor"
 type WorkerStatus = "Active" | "Leave" | "Offsite"
@@ -271,6 +272,105 @@ const WORKERS: Worker[] = [
   },
 ]
 
+const PERSON_FIELDS: readonly FieldDef[] = [
+  { name: "s1", label: "Personal details", type: "section" },
+  {
+    name: "first_name",
+    label: "First name",
+    type: "text",
+    required: true,
+    placeholder: "Given name",
+  },
+  {
+    name: "last_name",
+    label: "Last name",
+    type: "text",
+    required: true,
+    placeholder: "Family name",
+  },
+  {
+    name: "role",
+    label: "Role / position",
+    type: "text",
+    required: true,
+    placeholder: "e.g. Site supervisor, Concreter",
+  },
+  {
+    name: "trade",
+    label: "Trade",
+    type: "select",
+    options: [
+      "Concrete / formwork",
+      "Carpentry",
+      "Steel fixing",
+      "Scaffolding",
+      "Rigging",
+      "Electrical",
+      "Traffic control",
+      "Plant operation",
+      "Crane operation",
+      "Survey",
+      "Management",
+      "Other",
+    ],
+  },
+  { name: "s2", label: "Employment", type: "section" },
+  {
+    name: "engagement",
+    label: "Engagement type",
+    type: "select",
+    required: true,
+    options: [
+      "Direct employee",
+      "Labour hire",
+      "Subcontractor — individual",
+      "Subcontractor — company",
+    ],
+  },
+  {
+    name: "employer",
+    label: "Employer / company",
+    type: "text",
+    placeholder: "If labour hire or sub",
+  },
+  {
+    name: "site",
+    label: "Primary site",
+    type: "select",
+    required: true,
+    options: [
+      "Melbourne Depot",
+      "Sydney Yard",
+      "Brisbane Terminal",
+      "Perth Workshop",
+      "Adelaide Depot",
+      "Geelong Site",
+    ],
+  },
+  { name: "start_date", label: "Start date", type: "date", required: true },
+  { name: "s3", label: "Contact", type: "section" },
+  {
+    name: "mobile",
+    label: "Mobile",
+    type: "tel",
+    required: true,
+    placeholder: "0400 000 000",
+  },
+  { name: "email", label: "Email", type: "email", placeholder: "name@company.com.au" },
+  {
+    name: "emergency_name",
+    label: "Emergency contact name",
+    type: "text",
+    placeholder: "Full name",
+  },
+  {
+    name: "emergency_phone",
+    label: "Emergency contact phone",
+    type: "tel",
+    placeholder: "0400 000 000",
+  },
+]
+
 export function PeopleTable() {
   const total = WORKERS.length
   const active = WORKERS.filter((w) => w.status === "Active").length
@@ -281,6 +381,11 @@ export function PeopleTable() {
     <PageScroll overflows>
       <Frame>
         <Toolbar filters={3} />
+
+        <div className="mb-4 flex items-center justify-between">
+          <p className="text-xs text-muted-foreground">Register overview</p>
+          <AddSheet title="Person" fields={PERSON_FIELDS} />
+        </div>
 
         <div className="mt-4 grid grid-cols-4 gap-2">
           {[

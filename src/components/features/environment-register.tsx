@@ -1,5 +1,6 @@
 import { PageScroll } from "@/components/shared/page-scroll"
 import { Frame, Toolbar } from "@/components/features/views/primitives"
+import { AddSheet, type FieldDef } from "@/components/shared/add-sheet"
 import { cn } from "@/lib/utils"
 
 type EnvAspect =
@@ -161,6 +162,85 @@ const ENV_ITEMS: EnvItem[] = [
   },
 ]
 
+const ENVIRONMENT_FIELDS: readonly FieldDef[] = [
+  { name: "s1", label: "Aspect details", type: "section" },
+  {
+    name: "aspect",
+    label: "Aspect / activity",
+    type: "text",
+    required: true,
+    placeholder: "e.g. Concrete washout to stormwater",
+  },
+  {
+    name: "type",
+    label: "Aspect type",
+    type: "select",
+    required: true,
+    options: [
+      "Stormwater / waterway",
+      "Dust / air quality",
+      "Noise and vibration",
+      "Waste management",
+      "Soil contamination",
+      "Erosion and sediment",
+      "Flora and fauna",
+      "Cultural heritage",
+      "Energy use",
+      "Other",
+    ],
+  },
+  {
+    name: "site",
+    label: "Site",
+    type: "select",
+    required: true,
+    options: [
+      "Melbourne Depot",
+      "Sydney Yard",
+      "Brisbane Terminal",
+      "Perth Workshop",
+      "Adelaide Depot",
+      "Geelong Site",
+      "All sites",
+    ],
+  },
+  { name: "s2", label: "Risk and controls", type: "section" },
+  {
+    name: "risk",
+    label: "Risk rating",
+    type: "select",
+    required: true,
+    options: ["High", "Medium", "Low"],
+  },
+  {
+    name: "controls",
+    label: "Control measures",
+    type: "textarea",
+    required: true,
+    rows: 3,
+    placeholder: "Describe the controls in place to manage this aspect…",
+  },
+  {
+    name: "monitoring",
+    label: "Monitoring frequency",
+    type: "select",
+    options: ["Daily", "Weekly", "Monthly", "Quarterly", "As required"],
+  },
+  {
+    name: "licence_condition",
+    label: "Licence / approval condition reference",
+    type: "text",
+    placeholder: "e.g. EPL-4531 Condition 7.3",
+  },
+  {
+    name: "owner",
+    label: "Responsible person",
+    type: "text",
+    required: true,
+    placeholder: "Full name",
+  },
+]
+
 export function EnvironmentRegister() {
   const compliant = ENV_ITEMS.filter((e) => e.status === "Compliant")
   const actionRequired = ENV_ITEMS.filter((e) => e.status === "Action required")
@@ -170,6 +250,11 @@ export function EnvironmentRegister() {
     <PageScroll overflows>
       <Frame>
         <Toolbar filters={3} />
+
+        <div className="mb-4 flex items-center justify-between">
+          <p className="text-xs text-muted-foreground">Register overview</p>
+          <AddSheet title="Environmental Aspect" fields={ENVIRONMENT_FIELDS} />
+        </div>
 
         <div className="mt-4 grid grid-cols-4 gap-2">
           {[

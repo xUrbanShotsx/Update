@@ -1,5 +1,6 @@
 import { PageScroll } from "@/components/shared/page-scroll"
 import { Frame, Toolbar } from "@/components/features/views/primitives"
+import { AddSheet, type FieldDef } from "@/components/shared/add-sheet"
 import { cn } from "@/lib/utils"
 
 type DocCategory = "Policy" | "Procedure" | "Form" | "Plan" | "Register" | "ITP"
@@ -177,6 +178,60 @@ const DOCUMENTS: Document[] = [
   },
 ]
 
+const DOCUMENT_FIELDS: readonly FieldDef[] = [
+  { name: "s1", label: "Document details", type: "section" },
+  {
+    name: "name",
+    label: "Document name",
+    type: "text",
+    required: true,
+    placeholder: "e.g. WHS Management Plan",
+  },
+  {
+    name: "category",
+    label: "Category",
+    type: "select",
+    required: true,
+    options: [
+      "Policy",
+      "Procedure",
+      "Management plan",
+      "Form / template",
+      "Register",
+      "Drawing",
+      "Specification",
+      "Certificate / licence",
+      "Report",
+      "Other",
+    ],
+  },
+  {
+    name: "version",
+    label: "Version",
+    type: "text",
+    required: true,
+    placeholder: "e.g. v2.1",
+  },
+  { name: "s2", label: "Ownership", type: "section" },
+  {
+    name: "owner",
+    label: "Document owner",
+    type: "text",
+    required: true,
+    placeholder: "Full name or role",
+  },
+  { name: "approver", label: "Approver", type: "text", placeholder: "Full name or role" },
+  { name: "s3", label: "Review cycle", type: "section" },
+  { name: "issue_date", label: "Issue / revision date", type: "date", required: true },
+  { name: "next_review", label: "Next review date", type: "date", required: true },
+  {
+    name: "file_ref",
+    label: "File reference / location",
+    type: "text",
+    placeholder: "SharePoint path or doc number",
+  },
+]
+
 export function DocumentsLibrary() {
   const current = DOCUMENTS.filter((d) => d.status === "Current")
   const underReview = DOCUMENTS.filter((d) => d.status === "Under review")
@@ -186,6 +241,11 @@ export function DocumentsLibrary() {
     <PageScroll overflows>
       <Frame>
         <Toolbar filters={3} />
+
+        <div className="mb-4 flex items-center justify-between">
+          <p className="text-xs text-muted-foreground">Register overview</p>
+          <AddSheet title="Document" fields={DOCUMENT_FIELDS} />
+        </div>
 
         <div className="mt-4 grid grid-cols-4 gap-2">
           {[

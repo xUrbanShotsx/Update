@@ -1,4 +1,5 @@
 import { PageScrollX } from "@/components/shared/page-scroll"
+import { AddSheet, type FieldDef } from "@/components/shared/add-sheet"
 import { cn } from "@/lib/utils"
 
 type Severity = "High" | "Medium" | "Low" | "Near miss"
@@ -14,18 +15,18 @@ type IncidentCard = {
 }
 
 const SEVERITY_TONE: Record<Severity, string> = {
-  High:       "bg-red-500/15 text-red-700 dark:text-red-400",
-  Medium:     "bg-amber-500/15 text-amber-700 dark:text-amber-400",
-  Low:        "bg-sky-500/15 text-sky-600 dark:text-sky-400",
-  "Near miss":"bg-violet-500/15 text-violet-700 dark:text-violet-400",
+  High: "bg-red-500/15 text-red-700 dark:text-red-400",
+  Medium: "bg-amber-500/15 text-amber-700 dark:text-amber-400",
+  Low: "bg-sky-500/15 text-sky-600 dark:text-sky-400",
+  "Near miss": "bg-violet-500/15 text-violet-700 dark:text-violet-400",
 }
 
 const LANE_DOT: Record<string, string> = {
-  "Reported":      "bg-red-500",
-  "Investigating": "bg-amber-500",
-  "Actions open":  "bg-orange-500",
-  "Verifying":     "bg-sky-500",
-  "Closed":        "bg-emerald-500",
+  Reported: "bg-red-500",
+  Investigating: "bg-amber-500",
+  "Actions open": "bg-orange-500",
+  Verifying: "bg-sky-500",
+  Closed: "bg-emerald-500",
 }
 
 const LANES: { label: string; cards: IncidentCard[] }[] = [
@@ -186,9 +187,108 @@ const LANES: { label: string; cards: IncidentCard[] }[] = [
   },
 ]
 
+const INCIDENT_FIELDS: readonly FieldDef[] = [
+  { name: "s1", label: "Incident details", type: "section" },
+  {
+    name: "type",
+    label: "Incident type",
+    type: "select",
+    required: true,
+    options: [
+      "Incident",
+      "Near miss",
+      "Hazard / unsafe condition",
+      "Injury",
+      "Property damage",
+      "Environmental",
+    ],
+  },
+  { name: "date", label: "Date", type: "date", required: true },
+  { name: "time", label: "Time", type: "time", required: true },
+  {
+    name: "site",
+    label: "Site",
+    type: "select",
+    required: true,
+    options: [
+      "Melbourne Depot",
+      "Sydney Yard",
+      "Brisbane Terminal",
+      "Perth Workshop",
+      "Adelaide Depot",
+      "Geelong Site",
+    ],
+  },
+  {
+    name: "location",
+    label: "Location on site",
+    type: "text",
+    placeholder: "e.g. Grid C4, Loading bay 2",
+  },
+  { name: "s2", label: "What happened", type: "section" },
+  {
+    name: "description",
+    label: "Description",
+    type: "textarea",
+    required: true,
+    rows: 4,
+    placeholder: "What happened, sequence of events, immediate cause…",
+  },
+  {
+    name: "persons",
+    label: "Person(s) involved",
+    type: "text",
+    placeholder: "Names and companies",
+  },
+  {
+    name: "injury_details",
+    label: "Injury details (if any)",
+    type: "text",
+    placeholder: "Type of injury, body part",
+  },
+  {
+    name: "treatment",
+    label: "Treatment given",
+    type: "select",
+    options: [
+      "None required",
+      "First aid on site",
+      "Medical treatment",
+      "Hospital — not admitted",
+      "Hospital — admitted",
+      "Under investigation",
+    ],
+  },
+  { name: "s3", label: "Response", type: "section" },
+  {
+    name: "notifiable",
+    label: "Notifiable to SafeWork / regulator?",
+    type: "select",
+    required: true,
+    options: ["No", "Yes — notification being prepared", "Yes — already notified"],
+  },
+  {
+    name: "immediate_actions",
+    label: "Immediate actions taken",
+    type: "textarea",
+    rows: 3,
+    placeholder: "Area secured, first aid given, scene preserved…",
+  },
+  {
+    name: "assigned_to",
+    label: "Investigation assigned to",
+    type: "text",
+    placeholder: "Full name",
+  },
+]
+
 export function SafetyBoard() {
   return (
     <PageScrollX overflows overflowsDown>
+      <div className="mb-4 flex items-center justify-between px-4 pt-4">
+        <p className="text-xs text-muted-foreground">Register overview</p>
+        <AddSheet title="Safety Incident" fields={INCIDENT_FIELDS} />
+      </div>
       <div className="flex w-max items-start gap-3 p-4">
         {LANES.map((lane) => (
           <section
@@ -198,10 +298,15 @@ export function SafetyBoard() {
             <header className="flex shrink-0 items-center gap-2 px-3 py-2.5">
               <span
                 aria-hidden
-                className={cn("size-1.5 rounded-full", LANE_DOT[lane.label] ?? "bg-muted-foreground/40")}
+                className={cn(
+                  "size-1.5 rounded-full",
+                  LANE_DOT[lane.label] ?? "bg-muted-foreground/40",
+                )}
               />
               <h2 className="text-sm font-medium">{lane.label}</h2>
-              <span className="text-xs text-muted-foreground/70">{lane.cards.length}</span>
+              <span className="text-xs text-muted-foreground/70">
+                {lane.cards.length}
+              </span>
             </header>
 
             <div className="flex flex-col gap-2 px-2 pb-2">
@@ -211,7 +316,9 @@ export function SafetyBoard() {
                   key={card.ref}
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-[11px] font-medium text-muted-foreground">{card.ref}</span>
+                    <span className="text-[11px] font-medium text-muted-foreground">
+                      {card.ref}
+                    </span>
                     <span
                       className={cn(
                         "rounded-md px-1.5 py-0.5 text-[10px] font-medium",
@@ -230,8 +337,12 @@ export function SafetyBoard() {
                     <div className="flex size-5 shrink-0 items-center justify-center rounded-full bg-fill-strong text-[9px] font-medium">
                       {card.initials}
                     </div>
-                    <span className="text-xs text-muted-foreground truncate">{card.assignee}</span>
-                    <span className="ml-auto shrink-0 text-[10px] text-muted-foreground/60">{card.reported}</span>
+                    <span className="text-xs text-muted-foreground truncate">
+                      {card.assignee}
+                    </span>
+                    <span className="ml-auto shrink-0 text-[10px] text-muted-foreground/60">
+                      {card.reported}
+                    </span>
                   </div>
                 </article>
               ))}

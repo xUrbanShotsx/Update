@@ -1,6 +1,7 @@
 import { PageScroll } from "@/components/shared/page-scroll"
 import { Frame, Toolbar } from "@/components/features/views/primitives"
 import { cn } from "@/lib/utils"
+import { AddSheet, type FieldDef } from "@/components/shared/add-sheet"
 
 type TicketStatus = "Current" | "Expiring" | "Expired"
 
@@ -224,6 +225,76 @@ const TICKETS: Ticket[] = [
   },
 ]
 
+const TRAINING_FIELDS: readonly FieldDef[] = [
+  { name: "s1", label: "Worker details", type: "section" },
+  {
+    name: "name",
+    label: "Worker name",
+    type: "text",
+    required: true,
+    placeholder: "Full name",
+  },
+  {
+    name: "site",
+    label: "Primary site",
+    type: "select",
+    required: true,
+    options: [
+      "Melbourne Depot",
+      "Sydney Yard",
+      "Brisbane Terminal",
+      "Perth Workshop",
+      "Adelaide Depot",
+      "Geelong Site",
+    ],
+  },
+  { name: "s2", label: "Licence / ticket details", type: "section" },
+  {
+    name: "ticket_type",
+    label: "Ticket / licence type",
+    type: "select",
+    required: true,
+    options: [
+      "High risk work licence — Scaffolding",
+      "High risk work licence — Rigging",
+      "High risk work licence — Crane operation",
+      "High risk work licence — EWP",
+      "High risk work licence — Forklift",
+      "White card (CPCCWHS1001)",
+      "First aid (HLTAID011)",
+      "Traffic controller",
+      "Dogman",
+      "Concreting",
+      "Certificate III — Civil construction",
+      "Certificate IV — Work health and safety",
+      "Diploma — WHS",
+      "Other",
+    ],
+  },
+  {
+    name: "licence_no",
+    label: "Licence / ticket number",
+    type: "text",
+    required: true,
+    placeholder: "e.g. HRW-NSW-123456",
+  },
+  {
+    name: "issuing_body",
+    label: "Issuing body / RTO",
+    type: "text",
+    placeholder: "e.g. SafeWork NSW, TAFE",
+  },
+  { name: "issued_date", label: "Date issued", type: "date", required: true },
+  { name: "expiry_date", label: "Expiry date", type: "date" },
+  {
+    name: "notes",
+    label: "Notes",
+    type: "textarea",
+    rows: 2,
+    placeholder: "Class, conditions, renewal tracking…",
+  },
+]
+
 export function TrainingTickets() {
   const total = TICKETS.length
   const current = TICKETS.filter((t) => t.status === "Current").length
@@ -234,6 +305,11 @@ export function TrainingTickets() {
     <PageScroll overflows>
       <Frame>
         <Toolbar filters={3} />
+
+        <div className="mb-4 flex items-center justify-between">
+          <p className="text-xs text-muted-foreground">Register overview</p>
+          <AddSheet title="Training Ticket" fields={TRAINING_FIELDS} />
+        </div>
 
         <div className="mt-4 grid grid-cols-4 gap-2">
           {[

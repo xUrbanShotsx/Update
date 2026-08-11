@@ -1,6 +1,92 @@
 import { PageScroll } from "@/components/shared/page-scroll"
 import { Frame, Toolbar } from "@/components/features/views/primitives"
+import { AddSheet, type FieldDef } from "@/components/shared/add-sheet"
 import { cn } from "@/lib/utils"
+
+const PROJECT_FIELDS: readonly FieldDef[] = [
+  { name: "s1", label: "Project identity", type: "section" },
+  {
+    name: "name",
+    label: "Project name",
+    type: "text",
+    required: true,
+    placeholder: "e.g. M80 Ring Road Upgrade",
+  },
+  {
+    name: "client",
+    label: "Client",
+    type: "text",
+    required: true,
+    placeholder: "e.g. VicRoads, Transurban",
+  },
+  {
+    name: "contract_no",
+    label: "Contract number",
+    type: "text",
+    required: true,
+    placeholder: "e.g. VR-2024-0127",
+  },
+  { name: "s2", label: "Financials", type: "section" },
+  {
+    name: "contract_value",
+    label: "Contract value ($)",
+    type: "number",
+    required: true,
+    placeholder: "e.g. 12500000",
+  },
+  { name: "s3", label: "Programme", type: "section" },
+  {
+    name: "stage",
+    label: "Current stage",
+    type: "select",
+    required: true,
+    options: [
+      "Tendered",
+      "Awarded",
+      "Mobilising",
+      "On site",
+      "Practical completion",
+      "Closed",
+    ],
+  },
+  { name: "start_date", label: "Contract start date", type: "date", required: true },
+  { name: "pc_date", label: "Practical completion date", type: "date", required: true },
+  { name: "s4", label: "Team", type: "section" },
+  {
+    name: "pm",
+    label: "Project manager",
+    type: "text",
+    required: true,
+    placeholder: "Full name",
+  },
+  {
+    name: "site_lead",
+    label: "Site / construction manager",
+    type: "text",
+    placeholder: "Full name",
+  },
+  {
+    name: "site",
+    label: "Primary site",
+    type: "select",
+    options: [
+      "Melbourne Depot",
+      "Sydney Yard",
+      "Brisbane Terminal",
+      "Perth Workshop",
+      "Adelaide Depot",
+      "Geelong Site",
+      "Other / multiple",
+    ],
+  },
+  {
+    name: "description",
+    label: "Project description",
+    type: "textarea",
+    rows: 3,
+    placeholder: "Brief scope summary…",
+  },
+]
 
 type ProjectStatus =
   | "Tendered"
@@ -168,7 +254,10 @@ export function ProjectsTable() {
   return (
     <PageScroll overflows>
       <Frame>
-        <Toolbar filters={3} />
+        <div className="mb-4 flex items-center justify-between">
+          <Toolbar filters={3} />
+          <AddSheet title="Project" fields={PROJECT_FIELDS} />
+        </div>
 
         <div className="mt-4 grid grid-cols-4 gap-2">
           {[

@@ -1,6 +1,93 @@
 import { Frame, Toolbar } from "@/components/features/views/primitives"
 import { PageScroll } from "@/components/shared/page-scroll"
+import { AddSheet, type FieldDef } from "@/components/shared/add-sheet"
 import { cn } from "@/lib/utils"
+
+const ASSET_FIELDS: readonly FieldDef[] = [
+  { name: "s1", label: "Asset details", type: "section" },
+  {
+    name: "description",
+    label: "Plant description",
+    type: "text",
+    required: true,
+    placeholder: "e.g. 20t excavator, EWP, concrete pump",
+  },
+  {
+    name: "fleet_id",
+    label: "Fleet / asset ID",
+    type: "text",
+    required: true,
+    placeholder: "e.g. PLT-041",
+  },
+  {
+    name: "make_model",
+    label: "Make / model",
+    type: "text",
+    placeholder: "e.g. Caterpillar 320",
+  },
+  {
+    name: "category",
+    label: "Category",
+    type: "select",
+    required: true,
+    options: [
+      "Crane",
+      "Excavator / earthworks",
+      "EWP / boom lift",
+      "Concrete pump",
+      "Roller / compactor",
+      "Generator",
+      "Forklift",
+      "Light vehicle",
+      "Truck",
+      "Scaffold",
+      "Other plant",
+    ],
+  },
+  { name: "s2", label: "Assignment", type: "section" },
+  {
+    name: "site",
+    label: "Current site",
+    type: "select",
+    required: true,
+    options: [
+      "Melbourne Depot",
+      "Sydney Yard",
+      "Brisbane Terminal",
+      "Perth Workshop",
+      "Adelaide Depot",
+      "Geelong Site",
+    ],
+  },
+  {
+    name: "operator",
+    label: "Operator / custodian",
+    type: "text",
+    placeholder: "Full name",
+  },
+  {
+    name: "rego",
+    label: "Registration / serial #",
+    type: "text",
+    placeholder: "e.g. 1AG2B3 or SN-456",
+  },
+  { name: "s3", label: "Maintenance", type: "section" },
+  { name: "last_service", label: "Last service date", type: "date" },
+  { name: "next_service", label: "Next service due", type: "date" },
+  {
+    name: "status",
+    label: "Current status",
+    type: "select",
+    required: true,
+    options: [
+      "Operational",
+      "Under service",
+      "Out of service",
+      "On order",
+      "Returned to hire",
+    ],
+  },
+]
 
 type AssetStatus = "Active" | "Off hire" | "Service" | "Breakdown"
 type Ownership = "Owned" | "Hired"
@@ -206,7 +293,10 @@ export function AssetsRegister() {
   return (
     <PageScroll overflows>
       <Frame>
-        <Toolbar filters={3} />
+        <div className="mb-4 flex items-center justify-between">
+          <Toolbar filters={3} />
+          <AddSheet title="Asset / Plant" fields={ASSET_FIELDS} />
+        </div>
 
         {/* Stat strip */}
         <div className="mt-4 grid grid-cols-4 gap-2">

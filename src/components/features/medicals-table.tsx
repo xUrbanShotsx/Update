@@ -1,6 +1,7 @@
 import { PageScroll } from "@/components/shared/page-scroll"
 import { Frame, Toolbar } from "@/components/features/views/primitives"
 import { cn } from "@/lib/utils"
+import { AddSheet, type FieldDef } from "@/components/shared/add-sheet"
 
 type MedicalType = "Pre-employment" | "Periodic" | "D&A" | "Fitness for duty"
 type Outcome = "Fit" | "Fit with restrictions" | "Unfit"
@@ -132,11 +133,91 @@ const MEDICALS: Medical[] = [
   },
 ]
 
+const MEDICAL_FIELDS: readonly FieldDef[] = [
+  { name: "s1", label: "Worker details", type: "section" },
+  {
+    name: "name",
+    label: "Worker name",
+    type: "text",
+    required: true,
+    placeholder: "Full name",
+  },
+  {
+    name: "site",
+    label: "Primary site",
+    type: "select",
+    required: true,
+    options: [
+      "Melbourne Depot",
+      "Sydney Yard",
+      "Brisbane Terminal",
+      "Perth Workshop",
+      "Adelaide Depot",
+      "Geelong Site",
+    ],
+  },
+  { name: "s2", label: "Medical assessment", type: "section" },
+  {
+    name: "type",
+    label: "Assessment type",
+    type: "select",
+    required: true,
+    options: [
+      "Pre-employment medical",
+      "Periodic health surveillance",
+      "Return to work medical",
+      "Fitness for duty",
+      "Drug and alcohol test",
+      "Audiometric test",
+      "Lung function / spirometry",
+      "Vision screening",
+      "Silica / dust health check",
+    ],
+  },
+  { name: "date", label: "Assessment date", type: "date", required: true },
+  {
+    name: "provider",
+    label: "Provider / clinic",
+    type: "text",
+    required: true,
+    placeholder: "e.g. Sonic Health Plus — Melbourne CBD",
+  },
+  { name: "s3", label: "Outcome", type: "section" },
+  {
+    name: "result",
+    label: "Result",
+    type: "select",
+    required: true,
+    options: [
+      "Fit — no restrictions",
+      "Fit with restrictions",
+      "Unfit — temporary",
+      "Unfit — permanent",
+      "Pending results",
+      "Declined / incomplete",
+    ],
+  },
+  {
+    name: "restrictions",
+    label: "Restrictions (if any)",
+    type: "textarea",
+    rows: 2,
+    placeholder: "Describe any work restrictions imposed…",
+  },
+  { name: "expiry_date", label: "Certificate expiry date", type: "date" },
+  { name: "next_due", label: "Next assessment due", type: "date", required: true },
+]
+
 export function MedicalsTable() {
   return (
     <PageScroll overflows>
       <Frame>
         <Toolbar filters={2} />
+
+        <div className="mb-4 flex items-center justify-between">
+          <p className="text-xs text-muted-foreground">Register overview</p>
+          <AddSheet title="Medical" fields={MEDICAL_FIELDS} />
+        </div>
 
         <div className="mt-4 grid grid-cols-4 gap-2">
           {[

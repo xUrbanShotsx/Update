@@ -1,5 +1,6 @@
 import { PageScroll } from "@/components/shared/page-scroll"
 import { Frame, Toolbar } from "@/components/features/views/primitives"
+import { AddSheet, type FieldDef } from "@/components/shared/add-sheet"
 import { cn } from "@/lib/utils"
 
 type InspStatus = "Scheduled" | "In progress" | "Completed" | "Overdue" | "Cancelled"
@@ -159,6 +160,72 @@ const INSPECTIONS: Inspection[] = [
   },
 ]
 
+const INSPECTION_FIELDS: readonly FieldDef[] = [
+  { name: "s1", label: "Inspection details", type: "section" },
+  {
+    name: "name",
+    label: "Inspection name",
+    type: "text",
+    required: true,
+    placeholder: "e.g. Pre-pour concrete inspection",
+  },
+  {
+    name: "template",
+    label: "Checklist template",
+    type: "select",
+    required: true,
+    options: [
+      "Pre-pour concrete",
+      "Plant pre-start",
+      "ISO 45001 site audit",
+      "Scaffold pre-use check",
+      "Confined space entry",
+      "Emergency drill",
+      "Toolbox talk sign-off",
+      "Traffic control verification",
+      "Environmental inspection",
+      "Custom",
+    ],
+  },
+  {
+    name: "site",
+    label: "Site",
+    type: "select",
+    required: true,
+    options: [
+      "Melbourne Depot",
+      "Sydney Yard",
+      "Brisbane Terminal",
+      "Perth Workshop",
+      "Adelaide Depot",
+      "Geelong Site",
+    ],
+  },
+  { name: "s2", label: "Assignment", type: "section" },
+  {
+    name: "assigned_to",
+    label: "Assigned to",
+    type: "text",
+    required: true,
+    placeholder: "Full name",
+  },
+  { name: "due_date", label: "Due date", type: "date", required: true },
+  {
+    name: "priority",
+    label: "Priority",
+    type: "select",
+    required: true,
+    options: ["High", "Normal", "Low"],
+  },
+  {
+    name: "notes",
+    label: "Notes",
+    type: "textarea",
+    rows: 2,
+    placeholder: "Any special instructions or scope notes…",
+  },
+]
+
 export function InspectionsSchedule() {
   const overdue = INSPECTIONS.filter((i) => i.status === "Overdue").length
   const due7 = INSPECTIONS.filter((i) =>
@@ -174,6 +241,11 @@ export function InspectionsSchedule() {
     <PageScroll overflows>
       <Frame>
         <Toolbar filters={2} />
+
+        <div className="mb-4 flex items-center justify-between">
+          <p className="text-xs text-muted-foreground">Register overview</p>
+          <AddSheet title="Inspection" fields={INSPECTION_FIELDS} />
+        </div>
 
         <div className="mt-4 grid grid-cols-4 gap-2">
           {[

@@ -1,6 +1,7 @@
 import { PageScroll } from "@/components/shared/page-scroll"
 import { Frame, Toolbar } from "@/components/features/views/primitives"
 import { cn } from "@/lib/utils"
+import { AddSheet, type FieldDef } from "@/components/shared/add-sheet"
 
 type InductionStatus = "Valid" | "Expiring soon" | "Expired"
 
@@ -229,6 +230,73 @@ const INDUCTIONS: Induction[] = [
   },
 ]
 
+const INDUCTION_FIELDS: readonly FieldDef[] = [
+  { name: "s1", label: "Worker details", type: "section" },
+  {
+    name: "name",
+    label: "Worker name",
+    type: "text",
+    required: true,
+    placeholder: "Full name",
+  },
+  { name: "company", label: "Company / employer", type: "text", required: true },
+  { name: "role", label: "Role / trade", type: "text", required: true },
+  { name: "s2", label: "Induction details", type: "section" },
+  {
+    name: "site",
+    label: "Site",
+    type: "select",
+    required: true,
+    options: [
+      "Melbourne Depot",
+      "Sydney Yard",
+      "Brisbane Terminal",
+      "Perth Workshop",
+      "Adelaide Depot",
+      "Geelong Site",
+    ],
+  },
+  {
+    name: "induction_type",
+    label: "Induction type",
+    type: "select",
+    required: true,
+    options: [
+      "Site induction — general",
+      "Site induction — subcontractor",
+      "Visitor induction",
+      "Plant / equipment",
+      "Confined space",
+      "Working at heights",
+      "Traffic management",
+      "Emergency procedures",
+    ],
+  },
+  {
+    name: "induction_no",
+    label: "Induction number",
+    type: "text",
+    required: true,
+    placeholder: "e.g. IND-2024-0392",
+  },
+  { name: "date", label: "Induction date", type: "date", required: true },
+  {
+    name: "conducted_by",
+    label: "Conducted by",
+    type: "text",
+    required: true,
+    placeholder: "Full name",
+  },
+  { name: "expiry", label: "Expiry date", type: "date" },
+  {
+    name: "notes",
+    label: "Notes",
+    type: "textarea",
+    rows: 2,
+    placeholder: "Any conditions, restrictions, or additional notes…",
+  },
+]
+
 export function InductionsTable() {
   const total = INDUCTIONS.length
   const valid = INDUCTIONS.filter((i) => i.status === "Valid").length
@@ -239,6 +307,11 @@ export function InductionsTable() {
     <PageScroll overflows>
       <Frame>
         <Toolbar filters={3} />
+
+        <div className="mb-4 flex items-center justify-between">
+          <p className="text-xs text-muted-foreground">Register overview</p>
+          <AddSheet title="Induction" fields={INDUCTION_FIELDS} />
+        </div>
 
         <div className="mt-4 grid grid-cols-4 gap-2">
           {[

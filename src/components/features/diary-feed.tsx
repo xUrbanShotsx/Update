@@ -1,6 +1,79 @@
 import { PageScroll } from "@/components/shared/page-scroll"
 import { Frame } from "@/components/features/views/primitives"
+import { AddSheet, type FieldDef } from "@/components/shared/add-sheet"
 import { cn } from "@/lib/utils"
+
+const DIARY_FIELDS: readonly FieldDef[] = [
+  { name: "s1", label: "Site details", type: "section" },
+  {
+    name: "site",
+    label: "Site",
+    type: "select",
+    required: true,
+    options: [
+      "Melbourne Depot",
+      "Sydney Yard",
+      "Brisbane Terminal",
+      "Perth Workshop",
+      "Adelaide Depot",
+      "Geelong Site",
+    ],
+  },
+  { name: "date", label: "Date", type: "date", required: true },
+  {
+    name: "author",
+    label: "Diary author",
+    type: "text",
+    required: true,
+    placeholder: "Full name",
+  },
+  { name: "s2", label: "Conditions", type: "section" },
+  {
+    name: "weather",
+    label: "Weather",
+    type: "select",
+    required: true,
+    options: [
+      "Fine",
+      "Partly cloudy",
+      "Cloudy",
+      "Light rain",
+      "Heavy rain",
+      "Wind",
+      "Extreme heat",
+    ],
+  },
+  { name: "temp", label: "Temperature (°C)", type: "number", placeholder: "e.g. 24" },
+  {
+    name: "crew",
+    label: "Crew on site",
+    type: "number",
+    required: true,
+    placeholder: "Number of workers",
+  },
+  { name: "s3", label: "Work record", type: "section" },
+  {
+    name: "work",
+    label: "Work performed",
+    type: "textarea",
+    required: true,
+    rows: 4,
+    placeholder: "Describe the day's activities, areas worked, progress achieved…",
+  },
+  {
+    name: "delays",
+    label: "Delays / issues",
+    type: "textarea",
+    rows: 3,
+    placeholder: "Any delays, hold points, or issues encountered…",
+  },
+  {
+    name: "visitors",
+    label: "Visitors / inspections",
+    type: "text",
+    placeholder: "Client rep, regulator, engineer, etc.",
+  },
+]
 
 type DiaryStatus = "Submitted" | "Draft"
 type Weather = "Sunny" | "Cloudy" | "Rain"
@@ -116,6 +189,10 @@ export function DiaryFeed() {
   return (
     <PageScroll overflows>
       <Frame>
+        <div className="mb-4 flex items-center justify-between">
+          <p className="text-xs text-muted-foreground">{DIARY_ENTRIES.length} entries</p>
+          <AddSheet title="Diary Entry" fields={DIARY_FIELDS} />
+        </div>
         <div className="flex flex-col gap-3">
           {DIARY_ENTRIES.map((entry) => (
             <article

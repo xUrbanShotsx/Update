@@ -1,5 +1,6 @@
 import { PageScroll } from "@/components/shared/page-scroll"
 import { Frame, Toolbar } from "@/components/features/views/primitives"
+import { AddSheet, type FieldDef } from "@/components/shared/add-sheet"
 import { cn } from "@/lib/utils"
 
 type TalkStatus = "Completed" | "Scheduled" | "Overdue" | "Cancelled"
@@ -147,6 +148,60 @@ const TALKS: Talk[] = [
   },
 ]
 
+const TOOLBOX_FIELDS: readonly FieldDef[] = [
+  { name: "s1", label: "Talk details", type: "section" },
+  {
+    name: "topic",
+    label: "Topic",
+    type: "text",
+    required: true,
+    placeholder: "e.g. Working at height — harness pre-start checks",
+  },
+  {
+    name: "site",
+    label: "Site",
+    type: "select",
+    required: true,
+    options: [
+      "Melbourne Depot",
+      "Sydney Yard",
+      "Brisbane Terminal",
+      "Perth Workshop",
+      "Adelaide Depot",
+      "Geelong Site",
+    ],
+  },
+  {
+    name: "presenter",
+    label: "Presenter",
+    type: "text",
+    required: true,
+    placeholder: "Full name",
+  },
+  { name: "s2", label: "Scheduling", type: "section" },
+  { name: "date", label: "Date", type: "date", required: true },
+  { name: "time", label: "Start time", type: "time" },
+  {
+    name: "duration",
+    label: "Duration",
+    type: "select",
+    options: ["5 min", "10 min", "15 min", "20 min", "30 min", "45 min", "1 hour"],
+  },
+  {
+    name: "attendees",
+    label: "Number of attendees",
+    type: "number",
+    placeholder: "e.g. 14",
+  },
+  {
+    name: "notes",
+    label: "Additional notes",
+    type: "textarea",
+    rows: 2,
+    placeholder: "SWMS discussed, hazards raised, actions…",
+  },
+]
+
 export function ToolboxTalks() {
   const completed = TALKS.filter((t) => t.status === "Completed")
   const avgAttendance =
@@ -163,6 +218,11 @@ export function ToolboxTalks() {
     <PageScroll overflows>
       <Frame>
         <Toolbar filters={2} />
+
+        <div className="mb-4 flex items-center justify-between">
+          <p className="text-xs text-muted-foreground">Register overview</p>
+          <AddSheet title="Toolbox Talk" fields={TOOLBOX_FIELDS} />
+        </div>
 
         <div className="mt-4 grid grid-cols-4 gap-2">
           {[

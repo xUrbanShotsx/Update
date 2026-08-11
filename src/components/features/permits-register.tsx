@@ -1,5 +1,6 @@
 import { PageScroll } from "@/components/shared/page-scroll"
 import { Frame, Toolbar } from "@/components/features/views/primitives"
+import { AddSheet, type FieldDef } from "@/components/shared/add-sheet"
 import { cn } from "@/lib/utils"
 
 type PermitType =
@@ -166,6 +167,74 @@ const PERMITS: Permit[] = [
   },
 ]
 
+const PERMIT_FIELDS: readonly FieldDef[] = [
+  { name: "s1", label: "Permit details", type: "section" },
+  {
+    name: "permit_type",
+    label: "Permit type",
+    type: "select",
+    required: true,
+    options: [
+      "Hot work / welding",
+      "Confined space entry",
+      "Live electrical work",
+      "Excavation / ground penetration",
+      "Working at height",
+      "Crane lift / engineered lift",
+      "Energised systems isolation",
+      "Traffic management",
+      "Environmental works",
+    ],
+  },
+  {
+    name: "site",
+    label: "Site",
+    type: "select",
+    required: true,
+    options: [
+      "Melbourne Depot",
+      "Sydney Yard",
+      "Brisbane Terminal",
+      "Perth Workshop",
+      "Adelaide Depot",
+      "Geelong Site",
+    ],
+  },
+  {
+    name: "work_location",
+    label: "Work location description",
+    type: "text",
+    required: true,
+    placeholder: "e.g. Level 3 plant room, Grid D5 excavation",
+  },
+  { name: "s2", label: "People", type: "section" },
+  {
+    name: "issued_to",
+    label: "Issued to (permit holder)",
+    type: "text",
+    required: true,
+    placeholder: "Full name",
+  },
+  {
+    name: "issuing_authority",
+    label: "Issuing authority (site supervisor)",
+    type: "text",
+    required: true,
+    placeholder: "Full name",
+  },
+  { name: "s3", label: "Validity period", type: "section" },
+  { name: "valid_from_date", label: "Valid from — date", type: "date", required: true },
+  { name: "valid_from_time", label: "Valid from — time", type: "time", required: true },
+  { name: "expires_date", label: "Expires — date", type: "date", required: true },
+  { name: "expires_time", label: "Expires — time", type: "time", required: true },
+  {
+    name: "swms_ref",
+    label: "SWMS reference",
+    type: "text",
+    placeholder: "e.g. SWMS-2024-0041",
+  },
+]
+
 export function PermitsRegister() {
   const active = PERMITS.filter((p) => p.status === "Active")
   const issuedToday = PERMITS.filter((p) => p.issued.startsWith("11 Aug"))
@@ -176,6 +245,11 @@ export function PermitsRegister() {
     <PageScroll overflows>
       <Frame>
         <Toolbar filters={3} />
+
+        <div className="mb-4 flex items-center justify-between">
+          <p className="text-xs text-muted-foreground">Register overview</p>
+          <AddSheet title="Permit to Work" fields={PERMIT_FIELDS} />
+        </div>
 
         <div className="mt-4 grid grid-cols-4 gap-2">
           {[

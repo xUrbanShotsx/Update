@@ -1,6 +1,70 @@
 import { Frame, Toolbar } from "@/components/features/views/primitives"
 import { PageScroll } from "@/components/shared/page-scroll"
+import { AddSheet, type FieldDef } from "@/components/shared/add-sheet"
 import { cn } from "@/lib/utils"
+
+const CLAIM_FIELDS: readonly FieldDef[] = [
+  { name: "s1", label: "Contract details", type: "section" },
+  {
+    name: "project",
+    label: "Project",
+    type: "select",
+    required: true,
+    options: [
+      "M80 Ring Road Upgrade",
+      "Westgate Ramps",
+      "Sydney Metro Fitout",
+      "Brisbane River Wharf",
+      "Perth Depot Extension",
+      "Adelaide Box Culverts",
+      "Geelong Ring Road Bypass",
+    ],
+  },
+  {
+    name: "claim_no",
+    label: "Claim number",
+    type: "text",
+    required: true,
+    placeholder: "e.g. PC-007",
+  },
+  { name: "s2", label: "Claim period", type: "section" },
+  { name: "period_from", label: "Period from", type: "date", required: true },
+  { name: "period_to", label: "Period to", type: "date", required: true },
+  { name: "s3", label: "Amounts", type: "section" },
+  {
+    name: "scheduled_value",
+    label: "Scheduled value ($)",
+    type: "number",
+    required: true,
+    placeholder: "Total contract value of work",
+  },
+  {
+    name: "claimed_amount",
+    label: "Claimed this period ($)",
+    type: "number",
+    required: true,
+    placeholder: "Amount claimed",
+  },
+  {
+    name: "materials_on_site",
+    label: "Materials on site ($)",
+    type: "number",
+    placeholder: "Stored materials not yet installed",
+  },
+  {
+    name: "retention_pct",
+    label: "Retention (%)",
+    type: "number",
+    placeholder: "e.g. 5",
+  },
+  {
+    name: "status",
+    label: "Status",
+    type: "select",
+    required: true,
+    options: ["Draft", "Submitted", "Under assessment", "Assessed", "Paid", "Disputed"],
+  },
+]
 
 type ClaimStatus = "Submitted" | "Certified" | "Paid" | "Disputed"
 
@@ -112,7 +176,10 @@ export function ClaimsRegister() {
   return (
     <PageScroll overflows>
       <Frame>
-        <Toolbar filters={3} />
+        <div className="mb-4 flex items-center justify-between">
+          <Toolbar filters={3} />
+          <AddSheet title="Progress Claim" fields={CLAIM_FIELDS} />
+        </div>
 
         {/* Stat strip */}
         <div className="mt-4 grid grid-cols-4 gap-2">

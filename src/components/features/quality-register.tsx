@@ -12,6 +12,7 @@
 
 import { Frame } from "@/components/features/views/primitives"
 import { PageScroll } from "@/components/shared/page-scroll"
+import { AddSheet, type FieldDef } from "@/components/shared/add-sheet"
 import { cn } from "@/lib/utils"
 
 // ---------------------------------------------------------------------------
@@ -227,11 +228,90 @@ function StatusBadge({ status }: { readonly status: InspectionStatus }) {
 // Export
 // ---------------------------------------------------------------------------
 
+const ITP_FIELDS: readonly FieldDef[] = [
+  { name: "s1", label: "ITP details", type: "section" },
+  {
+    name: "itp_ref",
+    label: "ITP reference",
+    type: "text",
+    required: true,
+    placeholder: "e.g. ITP-CONC-007",
+  },
+  {
+    name: "description",
+    label: "Inspection item description",
+    type: "text",
+    required: true,
+    placeholder: "e.g. Pre-pour reo inspection — slab L3",
+  },
+  {
+    name: "lot",
+    label: "Lot / location",
+    type: "text",
+    placeholder: "e.g. Lot 3 — Grid C4–D6",
+  },
+  {
+    name: "site",
+    label: "Site",
+    type: "select",
+    required: true,
+    options: [
+      "Melbourne Depot",
+      "Sydney Yard",
+      "Brisbane Terminal",
+      "Perth Workshop",
+      "Adelaide Depot",
+      "Geelong Site",
+    ],
+  },
+  { name: "s2", label: "Inspection", type: "section" },
+  {
+    name: "point_type",
+    label: "Inspection point type",
+    type: "select",
+    required: true,
+    options: [
+      "Hold point — work must not proceed",
+      "Witness point — notification required",
+      "Review point — document only",
+    ],
+  },
+  { name: "inspection_date", label: "Inspection date", type: "date", required: true },
+  {
+    name: "inspector",
+    label: "Inspector name",
+    type: "text",
+    required: true,
+    placeholder: "Full name",
+  },
+  { name: "s3", label: "Outcome", type: "section" },
+  {
+    name: "result",
+    label: "Result",
+    type: "select",
+    required: true,
+    options: ["Pass", "Pass with comments", "Fail — NCR raised", "Pending", "Scheduled"],
+  },
+  { name: "score", label: "Score (%)", type: "number", placeholder: "e.g. 94" },
+  {
+    name: "notes",
+    label: "Notes / observations",
+    type: "textarea",
+    rows: 3,
+    placeholder: "Any observations, deviations, or hold-point release conditions…",
+  },
+]
+
 export function QualityRegister() {
   return (
     <PageScroll overflows>
       <Frame>
         <div className="flex flex-col gap-4">
+          <div className="mb-4 flex items-center justify-between">
+            <p className="text-xs text-muted-foreground">Register overview</p>
+            <AddSheet title="ITP Record" fields={ITP_FIELDS} />
+          </div>
+
           {/* Stat strip */}
           <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
             {STATS.map((stat) => (

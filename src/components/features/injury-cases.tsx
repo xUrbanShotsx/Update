@@ -1,6 +1,7 @@
 import { PageScroll } from "@/components/shared/page-scroll"
 import { Frame, Toolbar } from "@/components/features/views/primitives"
 import { cn } from "@/lib/utils"
+import { AddSheet, type FieldDef } from "@/components/shared/add-sheet"
 
 type Duties = "Full" | "Modified" | "Nil"
 type CaseStatus = "Active" | "RTW" | "Closed"
@@ -123,6 +124,122 @@ const CASES: InjuryCase[] = [
 const DAYS_LOST_YTD = 47
 const CLOSED_THIS_YEAR = 5
 
+const INJURY_FIELDS: readonly FieldDef[] = [
+  { name: "s1", label: "Worker details", type: "section" },
+  {
+    name: "name",
+    label: "Injured worker name",
+    type: "text",
+    required: true,
+    placeholder: "Full name",
+  },
+  { name: "company", label: "Company / employer", type: "text", required: true },
+  {
+    name: "site",
+    label: "Site of incident",
+    type: "select",
+    required: true,
+    options: [
+      "Melbourne Depot",
+      "Sydney Yard",
+      "Brisbane Terminal",
+      "Perth Workshop",
+      "Adelaide Depot",
+      "Geelong Site",
+    ],
+  },
+  {
+    name: "incident_ref",
+    label: "Incident report reference",
+    type: "text",
+    required: true,
+    placeholder: "e.g. INC-2024-0031",
+  },
+  { name: "s2", label: "Injury details", type: "section" },
+  {
+    name: "injury_type",
+    label: "Injury type",
+    type: "select",
+    required: true,
+    options: [
+      "Strain / sprain",
+      "Laceration / cut",
+      "Fracture",
+      "Burn",
+      "Eye injury",
+      "Crush injury",
+      "Contusion / bruising",
+      "Near miss (no injury)",
+      "Occupational disease",
+      "Other",
+    ],
+  },
+  {
+    name: "body_part",
+    label: "Body part affected",
+    type: "select",
+    required: true,
+    options: [
+      "Hand / wrist / fingers",
+      "Back / spine",
+      "Knee / leg",
+      "Shoulder / arm",
+      "Head / neck",
+      "Ankle / foot",
+      "Eye",
+      "Multiple",
+      "Other",
+    ],
+  },
+  {
+    name: "treatment",
+    label: "Treatment received",
+    type: "select",
+    required: true,
+    options: [
+      "First aid on site — no further treatment",
+      "Medical treatment — GP / clinic",
+      "Hospital — emergency / not admitted",
+      "Hospital — admitted",
+      "Ambulance attended",
+      "No treatment required",
+    ],
+  },
+  {
+    name: "lost_time",
+    label: "Lost time days",
+    type: "number",
+    placeholder: "0 if none",
+  },
+  { name: "s3", label: "Return to work", type: "section" },
+  {
+    name: "rtw_status",
+    label: "RTW status",
+    type: "select",
+    required: true,
+    options: [
+      "Fit for full duties",
+      "Modified duties — restrictions apply",
+      "Absent — medical certificate",
+      "Under review",
+      "Permanently incapacitated",
+    ],
+  },
+  {
+    name: "treating_doctor",
+    label: "Treating doctor / clinic",
+    type: "text",
+    placeholder: "Full name and practice",
+  },
+  { name: "next_review", label: "Next review date", type: "date" },
+  {
+    name: "workers_comp",
+    label: "Workers compensation claim lodged?",
+    type: "select",
+    options: ["No", "Yes — claim number pending", "Yes — claim active"],
+  },
+]
+
 export function InjuryCases() {
   const active = CASES.filter((c) => c.status === "Active").length
   const modified = CASES.filter((c) => c.duties === "Modified").length
@@ -131,6 +248,11 @@ export function InjuryCases() {
     <PageScroll overflows>
       <Frame>
         <Toolbar filters={2} />
+
+        <div className="mb-4 flex items-center justify-between">
+          <p className="text-xs text-muted-foreground">Register overview</p>
+          <AddSheet title="Injury Case" fields={INJURY_FIELDS} />
+        </div>
 
         <div className="mt-4 grid grid-cols-4 gap-2">
           {[

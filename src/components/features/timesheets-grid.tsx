@@ -1,6 +1,55 @@
 import { PageScroll } from "@/components/shared/page-scroll"
 import { Frame } from "@/components/features/views/primitives"
+import { AddSheet, type FieldDef } from "@/components/shared/add-sheet"
 import { cn } from "@/lib/utils"
+
+const TIMESHEET_FIELDS: readonly FieldDef[] = [
+  { name: "s1", label: "Employee details", type: "section" },
+  {
+    name: "person",
+    label: "Employee name",
+    type: "text",
+    required: true,
+    placeholder: "Full name",
+  },
+  {
+    name: "site",
+    label: "Site",
+    type: "select",
+    required: true,
+    options: [
+      "Melbourne Depot",
+      "Sydney Yard",
+      "Brisbane Terminal",
+      "Perth Workshop",
+      "Adelaide Depot",
+      "Geelong Site",
+    ],
+  },
+  { name: "week_ending", label: "Week ending (Sunday)", type: "date", required: true },
+  {
+    name: "cost_code",
+    label: "Cost code",
+    type: "text",
+    required: true,
+    placeholder: "e.g. CC-042-CIVILS",
+  },
+  { name: "s2", label: "Hours worked", type: "section" },
+  { name: "mon", label: "Monday (hrs)", type: "number", placeholder: "0" },
+  { name: "tue", label: "Tuesday (hrs)", type: "number", placeholder: "0" },
+  { name: "wed", label: "Wednesday (hrs)", type: "number", placeholder: "0" },
+  { name: "thu", label: "Thursday (hrs)", type: "number", placeholder: "0" },
+  { name: "fri", label: "Friday (hrs)", type: "number", placeholder: "0" },
+  { name: "sat", label: "Saturday (hrs, if any)", type: "number", placeholder: "0" },
+  { name: "sun", label: "Sunday (hrs, if any)", type: "number", placeholder: "0" },
+  {
+    name: "notes",
+    label: "Notes",
+    type: "textarea",
+    rows: 2,
+    placeholder: "RDO, travel time, allowances…",
+  },
+]
 
 type TimesheetStatus = "Approved" | "Pending"
 
@@ -113,6 +162,11 @@ export function TimesheetsGrid() {
   return (
     <PageScroll overflows>
       <Frame>
+        <div className="mb-4 flex items-center justify-between">
+          <p className="text-xs text-muted-foreground">{ROWS.length} timesheets</p>
+          <AddSheet title="Timesheet" fields={TIMESHEET_FIELDS} />
+        </div>
+
         {/* Stat strip */}
         <div className="grid grid-cols-4 gap-2">
           {STATS.map((stat) => (

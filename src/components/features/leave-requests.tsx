@@ -1,6 +1,7 @@
 import { PageScroll } from "@/components/shared/page-scroll"
 import { Frame, Toolbar } from "@/components/features/views/primitives"
 import { cn } from "@/lib/utils"
+import { AddSheet, type FieldDef } from "@/components/shared/add-sheet"
 
 type LeaveType = "Annual" | "Personal" | "Long service" | "RDO" | "TOIL"
 type LeaveStatus = "Approved" | "Pending" | "Declined"
@@ -166,6 +167,72 @@ const REQUESTS: LeaveRequest[] = [
   },
 ]
 
+const LEAVE_FIELDS: readonly FieldDef[] = [
+  { name: "s1", label: "Employee details", type: "section" },
+  {
+    name: "name",
+    label: "Employee name",
+    type: "text",
+    required: true,
+    placeholder: "Full name",
+  },
+  {
+    name: "site",
+    label: "Site",
+    type: "select",
+    required: true,
+    options: [
+      "Melbourne Depot",
+      "Sydney Yard",
+      "Brisbane Terminal",
+      "Perth Workshop",
+      "Adelaide Depot",
+      "Geelong Site",
+    ],
+  },
+  { name: "s2", label: "Leave details", type: "section" },
+  {
+    name: "leave_type",
+    label: "Leave type",
+    type: "select",
+    required: true,
+    options: [
+      "Annual leave",
+      "Sick leave",
+      "Personal / carers leave",
+      "Long service leave",
+      "Public holiday",
+      "TOIL / time off in lieu",
+      "RDO",
+      "Compassionate leave",
+      "Unpaid leave",
+    ],
+  },
+  { name: "from_date", label: "From date", type: "date", required: true },
+  { name: "to_date", label: "To date", type: "date", required: true },
+  {
+    name: "days",
+    label: "Number of days requested",
+    type: "number",
+    required: true,
+    placeholder: "e.g. 5",
+  },
+  {
+    name: "notes",
+    label: "Reason / notes",
+    type: "textarea",
+    rows: 2,
+    placeholder: "Optional — reason for leave, covering arrangements…",
+  },
+  { name: "s3", label: "Approval", type: "section" },
+  {
+    name: "approver",
+    label: "Approval required from",
+    type: "text",
+    placeholder: "Full name of approving manager",
+  },
+]
+
 export function LeaveRequests() {
   const pending = REQUESTS.filter((r) => r.status === "Pending").length
   const approved = REQUESTS.filter((r) => r.status === "Approved").length
@@ -177,6 +244,11 @@ export function LeaveRequests() {
     <PageScroll overflows>
       <Frame>
         <Toolbar filters={2} />
+
+        <div className="mb-4 flex items-center justify-between">
+          <p className="text-xs text-muted-foreground">Register overview</p>
+          <AddSheet title="Leave Request" fields={LEAVE_FIELDS} />
+        </div>
 
         <div className="mt-4 grid grid-cols-4 gap-2">
           {[

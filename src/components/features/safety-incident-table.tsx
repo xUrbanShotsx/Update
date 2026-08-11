@@ -1,5 +1,6 @@
 import { PageScroll } from "@/components/shared/page-scroll"
 import { Frame, Toolbar } from "@/components/features/views/primitives"
+import { AddSheet, type FieldDef } from "@/components/shared/add-sheet"
 import { cn } from "@/lib/utils"
 
 type Severity = "High" | "Medium" | "Low" | "Near miss"
@@ -206,6 +207,101 @@ const INCIDENTS: Incident[] = [
   },
 ]
 
+const INCIDENT_FIELDS: readonly FieldDef[] = [
+  { name: "s1", label: "Incident details", type: "section" },
+  {
+    name: "type",
+    label: "Incident type",
+    type: "select",
+    required: true,
+    options: [
+      "Incident",
+      "Near miss",
+      "Hazard / unsafe condition",
+      "Injury",
+      "Property damage",
+      "Environmental",
+    ],
+  },
+  { name: "date", label: "Date", type: "date", required: true },
+  { name: "time", label: "Time", type: "time", required: true },
+  {
+    name: "site",
+    label: "Site",
+    type: "select",
+    required: true,
+    options: [
+      "Melbourne Depot",
+      "Sydney Yard",
+      "Brisbane Terminal",
+      "Perth Workshop",
+      "Adelaide Depot",
+      "Geelong Site",
+    ],
+  },
+  {
+    name: "location",
+    label: "Location on site",
+    type: "text",
+    placeholder: "e.g. Grid C4, Loading bay 2",
+  },
+  { name: "s2", label: "What happened", type: "section" },
+  {
+    name: "description",
+    label: "Description",
+    type: "textarea",
+    required: true,
+    rows: 4,
+    placeholder: "What happened, sequence of events, immediate cause…",
+  },
+  {
+    name: "persons",
+    label: "Person(s) involved",
+    type: "text",
+    placeholder: "Names and companies",
+  },
+  {
+    name: "injury_details",
+    label: "Injury details (if any)",
+    type: "text",
+    placeholder: "Type of injury, body part",
+  },
+  {
+    name: "treatment",
+    label: "Treatment given",
+    type: "select",
+    options: [
+      "None required",
+      "First aid on site",
+      "Medical treatment",
+      "Hospital — not admitted",
+      "Hospital — admitted",
+      "Under investigation",
+    ],
+  },
+  { name: "s3", label: "Response", type: "section" },
+  {
+    name: "notifiable",
+    label: "Notifiable to SafeWork / regulator?",
+    type: "select",
+    required: true,
+    options: ["No", "Yes — notification being prepared", "Yes — already notified"],
+  },
+  {
+    name: "immediate_actions",
+    label: "Immediate actions taken",
+    type: "textarea",
+    rows: 3,
+    placeholder: "Area secured, first aid given, scene preserved…",
+  },
+  {
+    name: "assigned_to",
+    label: "Investigation assigned to",
+    type: "text",
+    placeholder: "Full name",
+  },
+]
+
 export function SafetyIncidentTable() {
   const open = INCIDENTS.filter((i) => i.status !== "Closed")
   const notifiable = INCIDENTS.filter((i) => i.notifiable)
@@ -215,6 +311,11 @@ export function SafetyIncidentTable() {
     <PageScroll overflows>
       <Frame>
         <Toolbar filters={3} />
+
+        <div className="mb-4 flex items-center justify-between">
+          <p className="text-xs text-muted-foreground">Register overview</p>
+          <AddSheet title="Safety Incident" fields={INCIDENT_FIELDS} />
+        </div>
 
         <div className="mt-4 grid grid-cols-4 gap-2">
           {[

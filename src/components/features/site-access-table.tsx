@@ -1,6 +1,79 @@
 import { Frame, Toolbar } from "@/components/features/views/primitives"
 import { PageScroll } from "@/components/shared/page-scroll"
+import { AddSheet, type FieldDef } from "@/components/shared/add-sheet"
 import { cn } from "@/lib/utils"
+
+const SIGN_ON_FIELDS: readonly FieldDef[] = [
+  { name: "s1", label: "Person details", type: "section" },
+  {
+    name: "name",
+    label: "Full name",
+    type: "text",
+    required: true,
+    placeholder: "First and last name",
+  },
+  {
+    name: "company",
+    label: "Company / employer",
+    type: "text",
+    required: true,
+    placeholder: "e.g. Lendlease, ABC Concreting",
+  },
+  {
+    name: "role",
+    label: "Role / trade",
+    type: "select",
+    required: true,
+    options: [
+      "Site supervisor",
+      "Leading hand",
+      "Concreter",
+      "Carpenter",
+      "Steel fixer",
+      "Scaffolder",
+      "Rigger",
+      "Crane operator",
+      "Electrician",
+      "Traffic controller",
+      "Plant operator",
+      "Labourer",
+      "Visitor",
+      "Other",
+    ],
+  },
+  { name: "s2", label: "Site entry", type: "section" },
+  {
+    name: "site",
+    label: "Site",
+    type: "select",
+    required: true,
+    options: [
+      "Melbourne Depot",
+      "Sydney Yard",
+      "Brisbane Terminal",
+      "Perth Workshop",
+      "Adelaide Depot",
+      "Geelong Site",
+    ],
+  },
+  { name: "date", label: "Date", type: "date", required: true },
+  { name: "time_in", label: "Time in", type: "time", required: true },
+  { name: "time_out", label: "Time out", type: "time" },
+  { name: "s3", label: "Compliance", type: "section" },
+  {
+    name: "induction",
+    label: "Induction #",
+    type: "text",
+    required: true,
+    placeholder: "e.g. IND-2024-0391",
+  },
+  {
+    name: "rego",
+    label: "Vehicle rego (if applicable)",
+    type: "text",
+    placeholder: "e.g. ABC123",
+  },
+]
 
 type AccessStatus = "On site" | "Signed off" | "Blocked"
 
@@ -253,7 +326,10 @@ export function SiteAccessTable() {
   return (
     <PageScroll overflows>
       <Frame>
-        <Toolbar filters={3} />
+        <div className="mb-4 flex items-center justify-between">
+          <Toolbar filters={3} />
+          <AddSheet title="Sign-on" fields={SIGN_ON_FIELDS} />
+        </div>
 
         {/* Stat strip */}
         <div className="mt-4 grid grid-cols-4 gap-2">

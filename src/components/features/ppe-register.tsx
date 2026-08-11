@@ -1,6 +1,7 @@
 import { PageScroll } from "@/components/shared/page-scroll"
 import { Frame, Toolbar } from "@/components/features/views/primitives"
 import { cn } from "@/lib/utils"
+import { AddSheet, type FieldDef } from "@/components/shared/add-sheet"
 
 type PpeStatus = "Current" | "Due" | "Overdue"
 
@@ -184,6 +185,78 @@ const RECORDS: PpeRecord[] = [
   },
 ]
 
+const PPE_FIELDS: readonly FieldDef[] = [
+  { name: "s1", label: "Recipient details", type: "section" },
+  {
+    name: "name",
+    label: "Worker name",
+    type: "text",
+    required: true,
+    placeholder: "Full name",
+  },
+  {
+    name: "site",
+    label: "Site",
+    type: "select",
+    required: true,
+    options: [
+      "Melbourne Depot",
+      "Sydney Yard",
+      "Brisbane Terminal",
+      "Perth Workshop",
+      "Adelaide Depot",
+      "Geelong Site",
+    ],
+  },
+  { name: "s2", label: "PPE item", type: "section" },
+  {
+    name: "item",
+    label: "PPE item type",
+    type: "select",
+    required: true,
+    options: [
+      "Hard hat (Type 1)",
+      "Hard hat (Type 2)",
+      "Hi-vis vest — Class D/N",
+      "Safety boots (steel cap)",
+      "Rigger gloves",
+      "Cut-resistant gloves",
+      "Safety glasses",
+      "Anti-fog goggles",
+      "Hearing protection — earplugs",
+      "Hearing protection — earmuffs",
+      "P2 / N95 respirator",
+      "Half-face respirator",
+      "Full face shield",
+      "Full body harness",
+      "Knee pads",
+      "Other",
+    ],
+  },
+  {
+    name: "size",
+    label: "Size (if applicable)",
+    type: "text",
+    placeholder: "e.g. L, XL, 11 (boot)",
+  },
+  {
+    name: "standard",
+    label: "Australian Standard compliance",
+    type: "text",
+    placeholder: "e.g. AS/NZS 1801, AS/NZS 3765",
+  },
+  { name: "s3", label: "Issue details", type: "section" },
+  { name: "issue_date", label: "Date issued", type: "date", required: true },
+  {
+    name: "condition",
+    label: "Condition at issue",
+    type: "select",
+    required: true,
+    options: ["New", "Good — refurbished", "Fair — still serviceable"],
+  },
+  { name: "next_replace", label: "Scheduled replacement date", type: "date" },
+]
+
 export function PpeRegister() {
   const total = RECORDS.length
   const due = RECORDS.filter((r) => r.status === "Due").length
@@ -194,6 +267,11 @@ export function PpeRegister() {
     <PageScroll overflows>
       <Frame>
         <Toolbar filters={3} />
+
+        <div className="mb-4 flex items-center justify-between">
+          <p className="text-xs text-muted-foreground">Register overview</p>
+          <AddSheet title="PPE Issue" fields={PPE_FIELDS} />
+        </div>
 
         <div className="mt-4 grid grid-cols-4 gap-2">
           {[

@@ -1,5 +1,6 @@
 import { PageScroll } from "@/components/shared/page-scroll"
 import { Frame, Toolbar } from "@/components/features/views/primitives"
+import { AddSheet, type FieldDef } from "@/components/shared/add-sheet"
 import { cn } from "@/lib/utils"
 
 type ContractorStatus = "Approved" | "Conditional" | "Expired" | "Pending"
@@ -165,6 +166,92 @@ const CONTRACTORS: Contractor[] = [
   },
 ]
 
+const CONTRACTOR_FIELDS: readonly FieldDef[] = [
+  { name: "s1", label: "Company details", type: "section" },
+  {
+    name: "company",
+    label: "Company name",
+    type: "text",
+    required: true,
+    placeholder: "e.g. FastForm Concrete Pty Ltd",
+  },
+  {
+    name: "abn",
+    label: "ABN",
+    type: "text",
+    required: true,
+    placeholder: "e.g. 12 345 678 901",
+  },
+  {
+    name: "trade",
+    label: "Trade / scope",
+    type: "select",
+    required: true,
+    options: [
+      "Concrete / formwork",
+      "Piling / ground engineering",
+      "Scaffolding",
+      "Waterproofing / membrane",
+      "Electrical",
+      "Traffic control",
+      "Survey",
+      "Crane / lifting",
+      "Earthworks",
+      "Steel fixing",
+      "Fit-out",
+      "HVAC",
+      "Plumbing",
+      "Other",
+    ],
+  },
+  {
+    name: "sites",
+    label: "Sites active on",
+    type: "text",
+    placeholder: "e.g. Melbourne Depot, Sydney Yard",
+  },
+  { name: "s2", label: "WHS compliance", type: "section" },
+  {
+    name: "whs_contact",
+    label: "WHS contact name",
+    type: "text",
+    required: true,
+    placeholder: "Full name",
+  },
+  {
+    name: "whs_phone",
+    label: "WHS contact phone",
+    type: "tel",
+    placeholder: "0400 000 000",
+  },
+  {
+    name: "insurance_expiry",
+    label: "Public liability insurance expiry",
+    type: "date",
+    required: true,
+  },
+  {
+    name: "swms_current",
+    label: "SWMS current and approved?",
+    type: "select",
+    required: true,
+    options: ["Yes", "No — pending", "No — not submitted"],
+  },
+  {
+    name: "status",
+    label: "Pre-qualification status",
+    type: "select",
+    required: true,
+    options: [
+      "Approved",
+      "Conditional — restrictions apply",
+      "Pending review",
+      "Suspended",
+      "Disqualified",
+    ],
+  },
+]
+
 export function ContractorsRegister() {
   const approved = CONTRACTORS.filter((c) => c.status === "Approved")
   const conditional = CONTRACTORS.filter((c) => c.status === "Conditional")
@@ -175,6 +262,11 @@ export function ContractorsRegister() {
     <PageScroll overflows>
       <Frame>
         <Toolbar filters={3} />
+
+        <div className="mb-4 flex items-center justify-between">
+          <p className="text-xs text-muted-foreground">Register overview</p>
+          <AddSheet title="Contractor" fields={CONTRACTOR_FIELDS} />
+        </div>
 
         <div className="mt-4 grid grid-cols-4 gap-2">
           {[

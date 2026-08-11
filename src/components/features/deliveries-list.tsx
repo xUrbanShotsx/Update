@@ -1,6 +1,72 @@
 import { Frame, Toolbar } from "@/components/features/views/primitives"
 import { PageScroll } from "@/components/shared/page-scroll"
+import { AddSheet, type FieldDef } from "@/components/shared/add-sheet"
 import { cn } from "@/lib/utils"
+
+const DELIVERY_FIELDS: readonly FieldDef[] = [
+  { name: "s1", label: "Delivery details", type: "section" },
+  {
+    name: "supplier",
+    label: "Supplier / company",
+    type: "text",
+    required: true,
+    placeholder: "e.g. Holcim, BASF, Kennards",
+  },
+  {
+    name: "description",
+    label: "Material description",
+    type: "textarea",
+    required: true,
+    rows: 2,
+    placeholder: "What is being delivered…",
+  },
+  {
+    name: "qty",
+    label: "Quantity",
+    type: "number",
+    required: true,
+    placeholder: "Amount",
+  },
+  {
+    name: "unit",
+    label: "Unit",
+    type: "select",
+    required: true,
+    options: ["t", "m³", "m", "m²", "ea", "L", "kg", "pallet", "load"],
+  },
+  { name: "s2", label: "Logistics", type: "section" },
+  {
+    name: "site",
+    label: "Delivery site",
+    type: "select",
+    required: true,
+    options: [
+      "Melbourne Depot",
+      "Sydney Yard",
+      "Brisbane Terminal",
+      "Perth Workshop",
+      "Adelaide Depot",
+      "Geelong Site",
+    ],
+  },
+  {
+    name: "gate",
+    label: "Gate / entry point",
+    type: "select",
+    options: ["Main gate", "Gate 1", "Gate 2", "Rear access", "East entry"],
+  },
+  { name: "booked_date", label: "Booked date", type: "date", required: true },
+  { name: "booked_time", label: "Booked time", type: "time", required: true },
+  { name: "s3", label: "Driver & vehicle", type: "section" },
+  { name: "driver", label: "Driver name", type: "text", placeholder: "Full name" },
+  { name: "rego", label: "Vehicle rego", type: "text", placeholder: "e.g. ABC 123" },
+  {
+    name: "po",
+    label: "Purchase order #",
+    type: "text",
+    placeholder: "e.g. PO-2024-0088",
+  },
+]
 
 type DeliveryStatus = "Scheduled" | "Arrived" | "Complete" | "Cancelled"
 type PlantRequired = "Crane" | "Forklift" | "None"
@@ -191,7 +257,10 @@ export function DeliveriesList() {
   return (
     <PageScroll overflows>
       <Frame>
-        <Toolbar filters={3} />
+        <div className="mb-4 flex items-center justify-between">
+          <Toolbar filters={3} />
+          <AddSheet title="Delivery" fields={DELIVERY_FIELDS} />
+        </div>
 
         {/* Stat strip */}
         <div className="mt-4 grid grid-cols-4 gap-2">

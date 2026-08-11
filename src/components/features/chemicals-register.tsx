@@ -1,5 +1,6 @@
 import { PageScroll } from "@/components/shared/page-scroll"
 import { Frame, Toolbar } from "@/components/features/views/primitives"
+import { AddSheet, type FieldDef } from "@/components/shared/add-sheet"
 import { cn } from "@/lib/utils"
 
 type SignalWord = "Danger" | "Warning"
@@ -171,6 +172,77 @@ const CHEMICALS: Chemical[] = [
   },
 ]
 
+const CHEMICAL_FIELDS: readonly FieldDef[] = [
+  { name: "s1", label: "Product details", type: "section" },
+  {
+    name: "product",
+    label: "Product name",
+    type: "text",
+    required: true,
+    placeholder: "e.g. Sika Anchorfix-3001",
+  },
+  {
+    name: "manufacturer",
+    label: "Manufacturer",
+    type: "text",
+    required: true,
+    placeholder: "e.g. Sika Australia Pty Ltd",
+  },
+  {
+    name: "signal_word",
+    label: "Signal word (GHS)",
+    type: "select",
+    required: true,
+    options: ["Danger", "Warning", "Not classified"],
+  },
+  {
+    name: "hazard_class",
+    label: "Primary hazard class",
+    type: "select",
+    required: true,
+    options: [
+      "Flammable liquid",
+      "Flammable solid / gas",
+      "Acute toxic",
+      "Skin / eye irritant",
+      "Corrosive",
+      "Oxidiser",
+      "Environmental hazard",
+      "Compressed gas",
+      "Not hazardous",
+    ],
+  },
+  { name: "s2", label: "Storage and use", type: "section" },
+  {
+    name: "sites",
+    label: "Site(s) used",
+    type: "text",
+    required: true,
+    placeholder: "e.g. Melbourne Depot, All sites",
+  },
+  {
+    name: "storage_location",
+    label: "Storage location",
+    type: "text",
+    placeholder: "e.g. Dangerous goods cabinet — site office",
+  },
+  {
+    name: "max_qty",
+    label: "Max quantity on site",
+    type: "text",
+    placeholder: "e.g. 20 L, 4 drums",
+  },
+  { name: "s3", label: "SDS management", type: "section" },
+  {
+    name: "sds_version",
+    label: "SDS version / date",
+    type: "text",
+    placeholder: "e.g. v3.0 — Jan 2024",
+  },
+  { name: "sds_reviewed", label: "SDS last reviewed", type: "date", required: true },
+  { name: "sds_next_review", label: "Next review due", type: "date", required: true },
+]
+
 export function ChemicalsRegister() {
   const reviewDue = CHEMICALS.filter((c) => c.status === "Review due")
   const outdated = CHEMICALS.filter((c) => c.status === "Outdated")
@@ -193,6 +265,11 @@ export function ChemicalsRegister() {
     <PageScroll overflows>
       <Frame>
         <Toolbar filters={3} />
+
+        <div className="mb-4 flex items-center justify-between">
+          <p className="text-xs text-muted-foreground">Register overview</p>
+          <AddSheet title="Chemical / SDS" fields={CHEMICAL_FIELDS} />
+        </div>
 
         <div className="mt-4 grid grid-cols-4 gap-2">
           {[

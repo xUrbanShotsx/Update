@@ -1,5 +1,68 @@
 import { PageScroll } from "@/components/shared/page-scroll"
+import { AddSheet, type FieldDef } from "@/components/shared/add-sheet"
 import { cn } from "@/lib/utils"
+
+const PHOTO_FIELDS: readonly FieldDef[] = [
+  { name: "s1", label: "Photo details", type: "section" },
+  {
+    name: "site",
+    label: "Site",
+    type: "select",
+    required: true,
+    options: [
+      "Melbourne Depot",
+      "Sydney Yard",
+      "Brisbane Terminal",
+      "Perth Workshop",
+      "Adelaide Depot",
+      "Geelong Site",
+    ],
+  },
+  {
+    name: "category",
+    label: "Category",
+    type: "select",
+    required: true,
+    options: [
+      "Safety",
+      "Progress",
+      "Defect / NCR",
+      "Delivery",
+      "Inspection",
+      "Incident",
+      "As-built",
+      "Environmental",
+    ],
+  },
+  {
+    name: "caption",
+    label: "Caption / description",
+    type: "text",
+    required: true,
+    placeholder: "Describe what the photo shows",
+  },
+  { name: "date", label: "Date taken", type: "date", required: true },
+  { name: "time", label: "Time taken", type: "time" },
+  {
+    name: "location_on_site",
+    label: "Location on site",
+    type: "text",
+    placeholder: "e.g. Grid C4 – pile cap, Level 3 north slab",
+  },
+  {
+    name: "tagged_people",
+    label: "Tag people (optional)",
+    type: "text",
+    placeholder: "Names of people in the photo",
+  },
+  { name: "s2", label: "Upload", type: "section" },
+  {
+    name: "file_note",
+    label: "File reference / note",
+    type: "text",
+    placeholder: "Camera roll ref or cloud link",
+  },
+]
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -472,6 +535,13 @@ export function PhotosGallery() {
   return (
     <PageScroll>
       <div className="mx-auto max-w-6xl px-4 py-6 space-y-8">
+        <div className="mb-4 flex items-center justify-between">
+          <p className="text-xs text-muted-foreground/60">
+            {groups.reduce((acc, g) => acc + g.photos.length, 0)} photos
+          </p>
+          <AddSheet title="Photo" fields={PHOTO_FIELDS} />
+        </div>
+
         {/* Toolbar / stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <StatTile label="Photos today" value={4} />

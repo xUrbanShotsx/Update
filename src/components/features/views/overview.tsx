@@ -29,8 +29,136 @@ import {
   GroupHeading,
   spread,
 } from "@/components/features/views/primitives"
+import { AddSheet, type FieldDef } from "@/components/shared/add-sheet"
 import { PageScroll } from "@/components/shared/page-scroll"
 import { cn } from "@/lib/utils"
+
+const LOCATION_FIELDS: readonly FieldDef[] = [
+  { name: "s1", label: "Site details", type: "section" },
+  {
+    name: "name",
+    label: "Site name",
+    type: "text",
+    required: true,
+    placeholder: "e.g. Newcastle Yard",
+  },
+  {
+    name: "region",
+    label: "State / region",
+    type: "select",
+    required: true,
+    options: [
+      "Victoria",
+      "New South Wales",
+      "Queensland",
+      "Western Australia",
+      "South Australia",
+      "Tasmania",
+      "Australian Capital Territory",
+      "Northern Territory",
+    ],
+  },
+  {
+    name: "address",
+    label: "Street address",
+    type: "text",
+    placeholder: "e.g. 45 Industrial Drive, Campbelltown NSW 2560",
+  },
+  { name: "s2", label: "Site management", type: "section" },
+  {
+    name: "lead",
+    label: "Site lead / supervisor",
+    type: "text",
+    required: true,
+    placeholder: "Full name",
+  },
+  {
+    name: "lead_mobile",
+    label: "Site lead mobile",
+    type: "tel",
+    placeholder: "0400 000 000",
+  },
+  {
+    name: "headcount",
+    label: "Expected headcount",
+    type: "number",
+    required: true,
+    placeholder: "Number of workers on books",
+  },
+  { name: "s3", label: "Status", type: "section" },
+  {
+    name: "status",
+    label: "Site status",
+    type: "select",
+    required: true,
+    options: ["Active", "Mobilising", "Demobilising", "Inactive", "Pending approval"],
+  },
+  { name: "open_date", label: "Site open date", type: "date" },
+]
+
+const PROJECT_FIELDS: readonly FieldDef[] = [
+  { name: "s1", label: "Project identity", type: "section" },
+  {
+    name: "name",
+    label: "Project name",
+    type: "text",
+    required: true,
+    placeholder: "e.g. M80 Ring Road Upgrade",
+  },
+  {
+    name: "client",
+    label: "Client",
+    type: "text",
+    required: true,
+    placeholder: "e.g. VicRoads, Transurban",
+  },
+  {
+    name: "contract_no",
+    label: "Contract number",
+    type: "text",
+    required: true,
+    placeholder: "e.g. VR-2024-0127",
+  },
+  { name: "s2", label: "Financials", type: "section" },
+  {
+    name: "contract_value",
+    label: "Contract value ($)",
+    type: "number",
+    required: true,
+    placeholder: "e.g. 12500000",
+  },
+  { name: "s3", label: "Programme", type: "section" },
+  {
+    name: "stage",
+    label: "Current stage",
+    type: "select",
+    required: true,
+    options: [
+      "Tendered",
+      "Awarded",
+      "Mobilising",
+      "On site",
+      "Practical completion",
+      "Closed",
+    ],
+  },
+  { name: "start_date", label: "Contract start date", type: "date", required: true },
+  { name: "pc_date", label: "Practical completion date", type: "date", required: true },
+  { name: "s4", label: "Team", type: "section" },
+  {
+    name: "pm",
+    label: "Project manager",
+    type: "text",
+    required: true,
+    placeholder: "Full name",
+  },
+  {
+    name: "site_lead",
+    label: "Site / construction manager",
+    type: "text",
+    placeholder: "Full name",
+  },
+]
 
 /** A headline number. `value` absent means nobody is counting it yet, and the
  *  tile says so rather than showing a zero that would read as good news. */
@@ -105,8 +233,13 @@ export function OverviewView({
               them. Two columns wide at `lg`: it carries the most per row and
               should not be the narrow one. */}
           <div className="overflow-hidden rounded-xl border bg-card lg:col-span-2">
-            <div className="border-b px-4 py-3">
+            <div className="flex items-center justify-between border-b px-4 py-2.5">
               <h3 className="text-sm font-medium">Sites</h3>
+              <AddSheet
+                fields={LOCATION_FIELDS}
+                title="Location"
+                submitLabel="Add location"
+              />
             </div>
             {/* Its own scroller, so a narrow panel scrolls the table rather than
                 the page — `PageScroll` above owns the vertical axis and nothing
@@ -192,8 +325,13 @@ export function OverviewView({
           {/* Projects, as rows rather than as another table: three fields, one
               of them free text, and nothing to line up column-wise. */}
           <div className="overflow-hidden rounded-xl border bg-card">
-            <div className="border-b px-4 py-3">
+            <div className="flex items-center justify-between border-b px-4 py-2.5">
               <h3 className="text-sm font-medium">Projects</h3>
+              <AddSheet
+                fields={PROJECT_FIELDS}
+                title="Project"
+                submitLabel="Add project"
+              />
             </div>
             {projects.length ? (
               <div className="divide-y">
