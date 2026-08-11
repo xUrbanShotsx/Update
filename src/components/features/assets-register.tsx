@@ -1,7 +1,10 @@
+"use client"
+import { useState } from "react"
 import { Frame, Toolbar } from "@/components/features/views/primitives"
 import { PageScroll } from "@/components/shared/page-scroll"
 import { AddSheet, type FieldDef } from "@/components/shared/add-sheet"
 import { cn } from "@/lib/utils"
+import { DetailSection, DetailRow } from "@/components/shared/detail-modal"
 
 const ASSET_FIELDS: readonly FieldDef[] = [
   { name: "s1", label: "Asset details", type: "section" },
@@ -115,6 +118,73 @@ const STATUS_TONE: Record<AssetStatus, string> = {
 const PRESTART_TONE: Record<PrestartStatus, string> = {
   Done: "text-emerald-600 dark:text-emerald-400",
   Due: "text-amber-600 dark:text-amber-400",
+}
+
+const SITE_OPERATOR: Record<string, string> = {
+  "Parramatta Interchange": "Sam Okafor",
+  "Chatswood Rail Upgrade": "Kyle Osman",
+  "Oran Park Civils": "Isaac Tamboli",
+  "Bankstown Substation": "Dean Cartwright",
+  "Homebush Drainage": "Troy Baxter",
+  "Rouse Hill Water Main": "Lachlan Murray",
+}
+
+const MONTHS = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+]
+
+function prevServiceDate(serviceDue: string): string {
+  if (serviceDue === "N/A") return "N/A"
+  const parts = serviceDue.split(" ")
+  if (parts.length < 3) return "—"
+  const day = parts[0]
+  const monthIdx = MONTHS.indexOf(parts[1])
+  const year = Number.parseInt(parts[2])
+  if (monthIdx === -1 || Number.isNaN(year)) return "—"
+  const prevIdx = (monthIdx - 3 + 12) % 12
+  const prevYear = monthIdx < 3 ? year - 1 : year
+  return `${day} ${MONTHS[prevIdx]} ${prevYear}`
+}
+
+function getMakeModel(name: string, type: string): string {
+  return name.replace(new RegExp(`\\s*${type}s?\\b.*$`, "i"), "").trim() || name
+}
+
+type ServiceRow = { service: string; date: string; technician: string; notes: string }
+
+function getServiceHistory(asset: Asset): ServiceRow[] {
+  const lastDate = prevServiceDate(asset.serviceDue)
+  return [
+    {
+      service: "250 hr scheduled service",
+      date: lastDate,
+      technician: "OEM Service Partner",
+      notes: "Fluids, filters, greasing completed. No defects.",
+    },
+    {
+      service: "Minor service — engine check",
+      date: prevServiceDate(lastDate),
+      technician: "Site Mechanic",
+      notes: "Oil change, air filter replaced. Returned to service.",
+    },
+    {
+      service: "Pre-delivery inspection",
+      date: prevServiceDate(prevServiceDate(lastDate)),
+      technician: "OEM Service Partner",
+      notes: "Full PDI completed. Certificate issued.",
+    },
+  ]
 }
 
 const ASSETS: Asset[] = [
@@ -275,6 +345,8 @@ const ASSETS: Asset[] = [
 ]
 
 export function AssetsRegister() {
+  const [selected, setSelected] = useState<Asset | null>(null)
+
   const totalActive = ASSETS.filter((a) => a.status === "Active").length
   const serviceDue = ASSETS.filter((a) => a.status === "Service").length
   const regExpiring = ASSETS.filter((a) => {
@@ -350,21 +422,22 @@ export function AssetsRegister() {
                 {ASSETS.map((asset) => (
                   <tr
                     className={cn(
-                      "hover:bg-accent/40 transition-colors",
+                      "cursor-pointer transition-colors hover:bg-accent/40",
                       asset.status === "Off hire" && "opacity-50",
                     )}
                     key={asset.ref}
+                    onClick={() => setSelected(asset)}
                   >
                     <td className="px-4 py-2.5">
-                      <p className="font-medium text-sm leading-snug">{asset.name}</p>
+                      <p className="text-sm font-medium leading-snug">{asset.name}</p>
                       <p className="font-mono text-[10px] text-muted-foreground">
                         {asset.ref}
                       </p>
                     </td>
-                    <td className="px-4 py-2.5 text-xs text-muted-foreground whitespace-nowrap">
+                    <td className="whitespace-nowrap px-4 py-2.5 text-xs text-muted-foreground">
                       {asset.type}
                     </td>
-                    <td className="px-4 py-2.5 text-xs whitespace-nowrap">
+                    <td className="whitespace-nowrap px-4 py-2.5 text-xs">
                       <span
                         className={cn(
                           "rounded bg-fill px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground",
@@ -373,18 +446,18 @@ export function AssetsRegister() {
                         {asset.ownership}
                       </span>
                     </td>
-                    <td className="px-4 py-2.5 text-xs text-muted-foreground whitespace-nowrap">
+                    <td className="whitespace-nowrap px-4 py-2.5 text-xs text-muted-foreground">
                       {asset.site}
                     </td>
-                    <td className="px-4 py-2.5 text-xs whitespace-nowrap">
+                    <td className="whitespace-nowrap px-4 py-2.5 text-xs">
                       <span className={cn("font-medium", PRESTART_TONE[asset.prestart])}>
                         {asset.prestart}
                       </span>
                     </td>
-                    <td className="px-4 py-2.5 text-xs text-muted-foreground whitespace-nowrap">
+                    <td className="whitespace-nowrap px-4 py-2.5 text-xs text-muted-foreground">
                       {asset.serviceDue}
                     </td>
-                    <td className="px-4 py-2.5 text-xs text-muted-foreground whitespace-nowrap">
+                    <td className="whitespace-nowrap px-4 py-2.5 text-xs text-muted-foreground">
                       {asset.registration}
                     </td>
                     <td className="px-4 py-2.5">
@@ -403,6 +476,162 @@ export function AssetsRegister() {
             </table>
           </div>
         </div>
+
+        {selected && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ background: "rgba(0,0,0,0.65)", backdropFilter: "blur(10px)" }}
+            onClick={() => setSelected(null)}
+          >
+            <div
+              className="relative w-full max-w-2xl overflow-hidden rounded-2xl border bg-card shadow-2xl"
+              style={{ maxHeight: "min(90vh, 820px)" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-start justify-between gap-4 border-b px-6 py-4">
+                <div>
+                  <h2 className="text-base font-semibold">
+                    {selected.name} · {selected.ref}
+                  </h2>
+                  <p className="mt-0.5 text-sm text-muted-foreground">
+                    {selected.type} · {selected.site}
+                  </p>
+                </div>
+                <button
+                  aria-label="Close"
+                  className="shrink-0 rounded-lg p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground"
+                  onClick={() => setSelected(null)}
+                >
+                  <svg
+                    className="size-4"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M4 4l8 8M12 4l-8 8" strokeLinecap="round" />
+                  </svg>
+                </button>
+              </div>
+              <div
+                className="overflow-y-auto px-6 py-5"
+                style={{ maxHeight: "calc(min(90vh, 820px) - 72px)" }}
+              >
+                <DetailSection label="Asset Details">
+                  <DetailRow label="Description" value={selected.name} />
+                  <DetailRow label="Fleet ID" value={selected.ref} />
+                  <DetailRow
+                    label="Make / model"
+                    value={getMakeModel(selected.name, selected.type)}
+                  />
+                  <DetailRow label="Category" value={selected.type} />
+                  <DetailRow label="Site" value={selected.site} />
+                  <DetailRow
+                    label="Operator"
+                    value={SITE_OPERATOR[selected.site] ?? "Unassigned"}
+                  />
+                  <DetailRow
+                    label="Registration / serial"
+                    value={selected.registration}
+                  />
+                  <DetailRow
+                    label="Status"
+                    value={
+                      <span
+                        className={cn(
+                          "rounded-md px-1.5 py-0.5 text-[10px] font-medium",
+                          STATUS_TONE[selected.status],
+                        )}
+                      >
+                        {selected.status}
+                      </span>
+                    }
+                  />
+                </DetailSection>
+
+                <DetailSection label="Service History">
+                  <table className="w-full text-xs">
+                    <thead>
+                      <tr className="border-b text-left text-[10px] text-muted-foreground">
+                        <th className="pb-1.5 font-medium">Service</th>
+                        <th className="pb-1.5 font-medium">Date</th>
+                        <th className="pb-1.5 font-medium">Technician</th>
+                        <th className="pb-1.5 font-medium">Notes</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y">
+                      {getServiceHistory(selected).map((row) => (
+                        <tr key={row.date + row.service}>
+                          <td className="py-1.5 font-medium">{row.service}</td>
+                          <td className="py-1.5 text-muted-foreground">{row.date}</td>
+                          <td className="py-1.5 text-muted-foreground">
+                            {row.technician}
+                          </td>
+                          <td className="py-1.5 text-muted-foreground">{row.notes}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </DetailSection>
+
+                <DetailSection label="Pre-start Checks">
+                  <ul className="space-y-1.5">
+                    {[
+                      {
+                        date: "11 Aug 2025",
+                        result: "Pass",
+                        tone: "text-emerald-600 dark:text-emerald-400",
+                      },
+                      {
+                        date: "8 Aug 2025",
+                        result: "Pass",
+                        tone: "text-emerald-600 dark:text-emerald-400",
+                      },
+                      {
+                        date: "7 Aug 2025",
+                        result: "Minor defect: Tyre pressure low (rectified)",
+                        tone: "text-amber-600 dark:text-amber-400",
+                      },
+                      {
+                        date: "6 Aug 2025",
+                        result: "Pass",
+                        tone: "text-emerald-600 dark:text-emerald-400",
+                      },
+                      {
+                        date: "5 Aug 2025",
+                        result: "Pass",
+                        tone: "text-emerald-600 dark:text-emerald-400",
+                      },
+                    ].map((check) => (
+                      <li
+                        className="flex items-center justify-between text-xs"
+                        key={check.date}
+                      >
+                        <span className="text-muted-foreground">{check.date}</span>
+                        <span className={cn("font-medium", check.tone)}>
+                          {check.result}
+                        </span>
+                        <span className="text-muted-foreground">
+                          {SITE_OPERATOR[selected.site] ?? "—"}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </DetailSection>
+
+                <DetailSection label="Maintenance Schedule">
+                  <DetailRow
+                    label="Last service"
+                    value={prevServiceDate(selected.serviceDue)}
+                  />
+                  <DetailRow label="Next service due" value={selected.serviceDue} />
+                  <DetailRow label="Service interval" value="250 hours or 3 months" />
+                  <DetailRow label="Current hours" value="1,240 hrs" />
+                </DetailSection>
+              </div>
+            </div>
+          </div>
+        )}
       </Frame>
     </PageScroll>
   )

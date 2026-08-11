@@ -1,7 +1,10 @@
+"use client"
+import { useState } from "react"
 import { PageScroll } from "@/components/shared/page-scroll"
 import { Frame, Toolbar } from "@/components/features/views/primitives"
 import { cn } from "@/lib/utils"
 import { AddSheet, type FieldDef } from "@/components/shared/add-sheet"
+import { DetailSection, DetailRow } from "@/components/shared/detail-modal"
 
 type Engagement = "Employee" | "Labour hire" | "Subcontractor"
 type WorkerStatus = "Active" | "Leave" | "Offsite"
@@ -27,6 +30,134 @@ const ENGAGEMENT_TONE: Record<Engagement, string> = {
   Employee: "bg-fill text-foreground",
   "Labour hire": "bg-violet-500/15 text-violet-700 dark:text-violet-400",
   Subcontractor: "bg-orange-500/15 text-orange-700 dark:text-orange-400",
+}
+
+const ENGAGEMENT_AVATAR_TONE: Record<Engagement, string> = {
+  Employee: "bg-fill-strong text-foreground",
+  "Labour hire": "bg-violet-500/20 text-violet-700 dark:text-violet-400",
+  Subcontractor: "bg-orange-500/20 text-orange-700 dark:text-orange-400",
+}
+
+type LicenceRow = { licence: string; number: string; expiry: string }
+
+function getLicences(trade: string): LicenceRow[] {
+  switch (trade) {
+    case "Supervision":
+      return [
+        {
+          licence: "Construction Induction (White Card)",
+          number: "WC-2847365",
+          expiry: "No expiry",
+        },
+        {
+          licence: "Workplace Health & Safety Certificate",
+          number: "N/A",
+          expiry: "Ongoing",
+        },
+      ]
+    case "Traffic control":
+      return [
+        {
+          licence: "Traffic Controller Accreditation",
+          number: "TC-2024-08-1193",
+          expiry: "12 Aug 2026",
+        },
+        {
+          licence: "Construction Induction (White Card)",
+          number: "WC-1937246",
+          expiry: "No expiry",
+        },
+      ]
+    case "Concreters":
+      return [
+        {
+          licence: "Construction Induction (White Card)",
+          number: "WC-3847291",
+          expiry: "No expiry",
+        },
+        {
+          licence: "EWP Licence (up to 11 m)",
+          number: "EWP-6745",
+          expiry: "14 Mar 2026",
+        },
+      ]
+    case "Steel fixers":
+      return [
+        {
+          licence: "Scaffolding High Risk Work Licence",
+          number: "SC-004821",
+          expiry: "30 Nov 2025",
+        },
+        {
+          licence: "Construction Induction (White Card)",
+          number: "WC-2034891",
+          expiry: "No expiry",
+        },
+      ]
+    case "Earthworks":
+      return [
+        { licence: "Rigging Intermediate", number: "RI-884920", expiry: "22 Oct 2025" },
+        { licence: "Dogging", number: "DG-552018", expiry: "22 Oct 2025" },
+        {
+          licence: "Construction Induction (White Card)",
+          number: "WC-2039481",
+          expiry: "No expiry",
+        },
+      ]
+    case "Electrical":
+      return [
+        {
+          licence: "Electrical Contractor Licence",
+          number: "EC-021847",
+          expiry: "31 Oct 2025",
+        },
+        {
+          licence: "Construction Induction (White Card)",
+          number: "WC-1847392",
+          expiry: "No expiry",
+        },
+      ]
+    default:
+      return [
+        {
+          licence: "Construction Induction (White Card)",
+          number: "WC-3847201",
+          expiry: "No expiry",
+        },
+      ]
+  }
+}
+
+function getEmpId(name: string) {
+  return `EMP-${name.replace(/\s+/g, "").slice(0, 4).toUpperCase()}01`
+}
+
+function getEmergencyContact(name: string, index: number) {
+  const lastName = name.split(" ")[1] ?? "Smith"
+  const digits = String(300 + index).padStart(3, "0")
+  return `Sarah ${lastName} · 0412 555 ${digits}`
+}
+
+type SiteHistory = { site: string; period: string }
+
+function getSiteHistory(worker: Worker, index: number): SiteHistory[] {
+  const sites = [
+    "Melbourne Depot",
+    "Sydney Yard",
+    "Brisbane Terminal",
+    "Perth Workshop",
+    "Adelaide Depot",
+    "Geelong Site",
+  ]
+  const otherSites = sites.filter((s) => s !== worker.site)
+  return [
+    { site: otherSites[index % otherSites.length], period: "Jan 2023 – Jun 2023" },
+    {
+      site: otherSites[(index + 1) % otherSites.length],
+      period: "Jul 2023 – Feb 2024",
+    },
+    { site: worker.site, period: `${worker.started} – Present` },
+  ]
 }
 
 const WORKERS: Worker[] = [
@@ -372,6 +503,9 @@ const PERSON_FIELDS: readonly FieldDef[] = [
 ]
 
 export function PeopleTable() {
+  const [selected, setSelected] = useState<Worker | null>(null)
+  const selectedIndex = selected ? WORKERS.findIndex((w) => w.name === selected.name) : 0
+
   const total = WORKERS.length
   const active = WORKERS.filter((w) => w.status === "Active").length
   const onLeave = WORKERS.filter((w) => w.status === "Leave").length
@@ -427,7 +561,11 @@ export function PeopleTable() {
               </thead>
               <tbody className="divide-y">
                 {WORKERS.map((w) => (
-                  <tr className="hover:bg-accent/40 transition-colors" key={w.name}>
+                  <tr
+                    className="cursor-pointer transition-colors hover:bg-accent/40"
+                    key={w.name}
+                    onClick={() => setSelected(w)}
+                  >
                     <td className="px-4 py-2.5">
                       <div className="flex items-center gap-2">
                         <div className="flex size-6 shrink-0 items-center justify-center rounded-full bg-fill-strong text-[10px] font-medium">
@@ -438,10 +576,10 @@ export function PeopleTable() {
                         </span>
                       </div>
                     </td>
-                    <td className="px-4 py-2.5 whitespace-nowrap text-xs text-muted-foreground">
+                    <td className="whitespace-nowrap px-4 py-2.5 text-xs text-muted-foreground">
                       {w.role}
                     </td>
-                    <td className="px-4 py-2.5 whitespace-nowrap text-xs text-muted-foreground">
+                    <td className="whitespace-nowrap px-4 py-2.5 text-xs text-muted-foreground">
                       {w.trade}
                     </td>
                     <td className="px-4 py-2.5">
@@ -454,10 +592,10 @@ export function PeopleTable() {
                         {w.engagement}
                       </span>
                     </td>
-                    <td className="px-4 py-2.5 whitespace-nowrap text-xs text-muted-foreground">
+                    <td className="whitespace-nowrap px-4 py-2.5 text-xs text-muted-foreground">
                       {w.site}
                     </td>
-                    <td className="px-4 py-2.5 whitespace-nowrap text-xs text-muted-foreground">
+                    <td className="whitespace-nowrap px-4 py-2.5 text-xs text-muted-foreground">
                       {w.started}
                     </td>
                     <td className="px-4 py-2.5">
@@ -476,6 +614,148 @@ export function PeopleTable() {
             </table>
           </div>
         </div>
+
+        {selected && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ background: "rgba(0,0,0,0.65)", backdropFilter: "blur(10px)" }}
+            onClick={() => setSelected(null)}
+          >
+            <div
+              className="relative w-full max-w-2xl overflow-hidden rounded-2xl border bg-card shadow-2xl"
+              style={{ maxHeight: "min(90vh, 820px)" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-start justify-between gap-4 border-b px-6 py-4">
+                <div>
+                  <h2 className="text-base font-semibold">{selected.name}</h2>
+                  <p className="mt-0.5 text-sm text-muted-foreground">
+                    {selected.role} · {selected.site}
+                  </p>
+                </div>
+                <button
+                  aria-label="Close"
+                  className="shrink-0 rounded-lg p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground"
+                  onClick={() => setSelected(null)}
+                >
+                  <svg
+                    className="size-4"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M4 4l8 8M12 4l-8 8" strokeLinecap="round" />
+                  </svg>
+                </button>
+              </div>
+              <div
+                className="overflow-y-auto px-6 py-5"
+                style={{ maxHeight: "calc(min(90vh, 820px) - 72px)" }}
+              >
+                <DetailSection label="Profile">
+                  <div className="mb-4 flex flex-col items-center">
+                    <div
+                      className={cn(
+                        "flex size-14 items-center justify-center rounded-full text-lg font-semibold",
+                        ENGAGEMENT_AVATAR_TONE[selected.engagement],
+                      )}
+                    >
+                      {selected.initials}
+                    </div>
+                    <p className="mt-2 text-sm font-semibold">{selected.name}</p>
+                  </div>
+                  <DetailRow label="Role" value={selected.role} />
+                  <DetailRow label="Trade" value={selected.trade} />
+                  <DetailRow
+                    label="Engagement"
+                    value={
+                      <span
+                        className={cn(
+                          "rounded-md px-1.5 py-0.5 text-[10px] font-medium",
+                          ENGAGEMENT_TONE[selected.engagement],
+                        )}
+                      >
+                        {selected.engagement}
+                      </span>
+                    }
+                  />
+                  <DetailRow label="Site" value={selected.site} />
+                  <DetailRow label="Started" value={selected.started} />
+                  <DetailRow
+                    label="Status"
+                    value={
+                      <span
+                        className={cn(
+                          "rounded-md px-1.5 py-0.5 text-[10px] font-medium",
+                          STATUS_TONE[selected.status],
+                        )}
+                      >
+                        {selected.status}
+                      </span>
+                    }
+                  />
+                  <DetailRow label="Employee #" value={getEmpId(selected.name)} />
+                  <DetailRow
+                    label="Emergency contact"
+                    value={getEmergencyContact(selected.name, selectedIndex)}
+                  />
+                </DetailSection>
+
+                <DetailSection label="Licences & Tickets">
+                  <table className="w-full text-xs">
+                    <thead>
+                      <tr className="border-b text-left text-[10px] text-muted-foreground">
+                        <th className="pb-1.5 font-medium">Licence</th>
+                        <th className="pb-1.5 font-medium">Number</th>
+                        <th className="pb-1.5 font-medium">Expiry</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y">
+                      {getLicences(selected.trade).map((row) => (
+                        <tr key={row.number}>
+                          <td className="py-1.5 font-medium">{row.licence}</td>
+                          <td className="py-1.5 font-mono text-muted-foreground">
+                            {row.number}
+                          </td>
+                          <td className="py-1.5 text-muted-foreground">{row.expiry}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </DetailSection>
+
+                <DetailSection label="Site History">
+                  <table className="w-full text-xs">
+                    <thead>
+                      <tr className="border-b text-left text-[10px] text-muted-foreground">
+                        <th className="pb-1.5 font-medium">Site</th>
+                        <th className="pb-1.5 font-medium">Period</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y">
+                      {getSiteHistory(selected, selectedIndex).map((row) => (
+                        <tr key={row.site + row.period}>
+                          <td className="py-1.5 font-medium">{row.site}</td>
+                          <td className="py-1.5 text-muted-foreground">{row.period}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </DetailSection>
+
+                <DetailSection label="Induction Status">
+                  <DetailRow
+                    label="Site induction"
+                    value={`Completed ${selected.started}`}
+                  />
+                  <DetailRow label="Last toolbox talk" value="8 Aug 2025" />
+                  <DetailRow label="Drug & alcohol test" value="Passed — 14 Jul 2025" />
+                </DetailSection>
+              </div>
+            </div>
+          </div>
+        )}
       </Frame>
     </PageScroll>
   )

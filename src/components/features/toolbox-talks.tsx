@@ -1,6 +1,9 @@
+"use client"
+import { useState } from "react"
 import { PageScroll } from "@/components/shared/page-scroll"
 import { Frame, Toolbar } from "@/components/features/views/primitives"
 import { AddSheet, type FieldDef } from "@/components/shared/add-sheet"
+import { DetailModal, DetailRow, DetailSection } from "@/components/shared/detail-modal"
 import { cn } from "@/lib/utils"
 
 type TalkStatus = "Completed" | "Scheduled" | "Overdue" | "Cancelled"
@@ -203,6 +206,7 @@ const TOOLBOX_FIELDS: readonly FieldDef[] = [
 ]
 
 export function ToolboxTalks() {
+  const [selected, setSelected] = useState<Talk | null>(null)
   const completed = TALKS.filter((t) => t.status === "Completed")
   const avgAttendance =
     completed.length > 0
@@ -275,7 +279,11 @@ export function ToolboxTalks() {
                       ? Math.round((talk.attendance / talk.crew) * 100)
                       : null
                   return (
-                    <tr className="hover:bg-accent/40 transition-colors" key={talk.ref}>
+                    <tr
+                      className="cursor-pointer transition-colors hover:bg-accent/40"
+                      key={talk.ref}
+                      onClick={() => setSelected(talk)}
+                    >
                       <td className="px-4 py-2.5">
                         <p className="text-sm font-medium leading-snug">{talk.topic}</p>
                         <p className="text-[10px] text-muted-foreground">{talk.ref}</p>
@@ -346,6 +354,85 @@ export function ToolboxTalks() {
             </table>
           </div>
         </div>
+        {selected && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ background: "rgba(0,0,0,0.65)", backdropFilter: "blur(10px)" }}
+            onClick={() => setSelected(null)}
+          >
+            <div
+              className="relative w-full max-w-lg overflow-hidden rounded-2xl border bg-card shadow-2xl"
+              style={{ maxHeight: "min(90vh, 720px)" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-start justify-between gap-4 border-b px-6 py-4">
+                <div>
+                  <h2 className="text-base font-semibold leading-snug">
+                    {selected.topic}
+                  </h2>
+                  <p className="mt-0.5 text-sm text-muted-foreground">
+                    {selected.ref} · {selected.site}
+                  </p>
+                </div>
+                <button
+                  aria-label="Close"
+                  className="shrink-0 rounded-lg p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground"
+                  onClick={() => setSelected(null)}
+                >
+                  <svg
+                    className="size-4"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M4 4l8 8M12 4l-8 8" strokeLinecap="round" />
+                  </svg>
+                </button>
+              </div>
+              <div
+                className="overflow-y-auto px-6 py-5"
+                style={{ maxHeight: "calc(min(90vh, 720px) - 72px)" }}
+              >
+                <DetailSection label="Talk Details">
+                  <DetailRow label="Reference" value={selected.ref} />
+                  <DetailRow label="Topic" value={selected.topic} />
+                  <DetailRow label="Site" value={selected.site} />
+                  <DetailRow label="Presenter" value={selected.presenter} />
+                  <DetailRow label="Delivered" value={selected.delivered} />
+                  <DetailRow
+                    label="Attendance"
+                    value={
+                      selected.attendance !== null
+                        ? `${selected.attendance} / ${selected.crew} (${Math.round((selected.attendance / selected.crew) * 100)}%)`
+                        : `Crew: ${selected.crew} · Not yet recorded`
+                    }
+                  />
+                  <DetailRow
+                    label="Status"
+                    value={
+                      <span
+                        className={cn(
+                          "rounded-md px-1.5 py-0.5 text-[10px] font-medium",
+                          STATUS_TONE[selected.status],
+                        )}
+                      >
+                        {selected.status}
+                      </span>
+                    }
+                  />
+                </DetailSection>
+                <DetailSection label="Documentation">
+                  <p className="text-xs text-muted-foreground">
+                    Sign-on sheet, presentation slides and any raised actions are attached
+                    to this record. Attendance acknowledgements are captured per-worker in
+                    the Workforce module.
+                  </p>
+                </DetailSection>
+              </div>
+            </div>
+          </div>
+        )}
       </Frame>
     </PageScroll>
   )

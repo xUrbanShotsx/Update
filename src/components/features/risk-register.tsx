@@ -1,7 +1,11 @@
+"use client"
+
+import { useState } from "react"
 import { PageScroll } from "@/components/shared/page-scroll"
 import { Frame, Toolbar } from "@/components/features/views/primitives"
 import { AddSheet, type FieldDef } from "@/components/shared/add-sheet"
 import { cn } from "@/lib/utils"
+import { DetailRow, DetailSection } from "@/components/shared/detail-modal"
 
 type RiskLevel = "Low" | "Medium" | "High" | "Extreme"
 
@@ -287,7 +291,86 @@ const RISK_FIELDS: readonly FieldDef[] = [
   { name: "review_date", label: "Review date", type: "date", required: true },
 ]
 
+const HOC_LEVELS: Array<{
+  name: string
+  color: string
+  description: string
+}> = [
+  {
+    name: "Elimination",
+    color: "#059669",
+    description:
+      "Remove the hazard entirely — redesign the work or process to avoid the need for the activity.",
+  },
+  {
+    name: "Substitution",
+    color: "#0284c7",
+    description:
+      "Replace the hazard with something less dangerous — use a lower-risk material, method, or piece of plant.",
+  },
+  {
+    name: "Isolation",
+    color: "#7c3aed",
+    description:
+      "Separate the hazard from people — exclusion zones, guarding, interlocks, or physical barriers.",
+  },
+  {
+    name: "Engineering controls",
+    color: "#b45309",
+    description:
+      "Physical controls that reduce exposure — ventilation, safe design, mechanical aids, structural protection.",
+  },
+  {
+    name: "Administrative controls",
+    color: "#c2410c",
+    description:
+      "Work systems and procedures — SWMS, permits, inductions, training, supervision, inspection schedules.",
+  },
+  {
+    name: "PPE",
+    color: "#b91c1c",
+    description:
+      "Personal protective equipment worn by the worker — the last resort, not a substitute for higher-order controls.",
+  },
+]
+
+const LEGISLATION_DESCRIPTIONS: Record<string, string> = {
+  "WHS Reg 2017 s.78–80":
+    "Regulations 78–80 require a safe work method statement (SWMS) for all high risk construction work involving a risk of a person falling more than 2 metres. The SWMS must identify hazards and document controls applied under the hierarchy of control.",
+  "WHS Reg 2017 s.211–213":
+    "Regulations 211–213 impose specific obligations for the management of plant risks, including cranes operating near energised overhead power lines. A minimum approach distance must be maintained unless the line is de-energised and earthed.",
+  "WHS Reg 2017 s.305–311":
+    "Regulations 305–311 require excavations deeper than 1.5 metres to be protected against collapse by benching, battering, or shoring. No person may enter an unprotected excavation that poses a collapse risk.",
+  "WHS Reg 2017 s.420–430":
+    "Regulations 420–430 regulate the management of asbestos and asbestos-containing materials (ACM). A licensed removalist is required for friable or non-friable ACM exceeding the prescribed threshold, and air monitoring must be carried out.",
+  "WHS Reg 2017 s.204":
+    "Regulation 204 requires traffic management to be planned and implemented to protect workers from being struck by moving vehicles and mobile plant. Pedestrian and vehicle paths must be separated where practicable.",
+  "WHS Reg 2017 s.66–69":
+    "Regulations 66–69 require a confined space entry permit system, atmospheric testing before entry, a trained standby person outside the space at all times, and a documented emergency rescue plan.",
+  "WHS Reg 2017 s.227":
+    "Regulation 227 requires scaffolding to be erected, altered, and dismantled by a competent person holding the appropriate high risk work licence. Scaffolding must be inspected at specified intervals and tagged to show its condition.",
+  "WHS Reg 2017 s.154":
+    "Regulation 154 prohibits energised electrical work except in defined circumstances. All electrical work must be performed by a licensed electrician, and the installation must be isolated, locked out, and tested before work begins.",
+  "WHS Reg 2017 s.56":
+    "Regulation 56 requires the PCBU to manage risks from manual tasks that could cause musculoskeletal disorder. Risk controls must follow the hierarchy, prioritising elimination or mechanical assistance over administrative measures.",
+  "WHS Reg 2017 s.36–42":
+    "Regulations 36–42 require the PCBU to manage risks from hazardous chemicals including respirable crystalline silica. Air monitoring and health surveillance are required where workers may be exposed above the exposure standard.",
+  "WHS Reg 2017 s.211":
+    "Regulation 211 requires the risks of uncontrolled plant movement to be eliminated or minimised. Exclusion zones, certified rigging, and competent dogmen are required where persons could be struck by plant or suspended loads.",
+  "WHS Act 2011 s.19":
+    "Section 19 imposes a primary duty of care on the PCBU to ensure, so far as is reasonably practicable, the health and safety of workers and other persons whose health and safety may be affected by work carried out at the workplace.",
+}
+
+function getLegislationDescription(legislation: string): string {
+  return (
+    LEGISLATION_DESCRIPTIONS[legislation] ??
+    `Refer to ${legislation} for detailed requirements applicable to this hazard category.`
+  )
+}
+
 export function RiskRegister() {
+  const [selected, setSelected] = useState<Risk | null>(null)
+
   const extreme = RISKS.filter((r) => r.residual === "Extreme").length
   const high = RISKS.filter((r) => r.residual === "High").length
   const medium = RISKS.filter((r) => r.residual === "Medium").length
@@ -305,14 +388,26 @@ export function RiskRegister() {
 
         <div className="mt-4 grid grid-cols-4 gap-2">
           {[
-            { label: "Extreme", value: extreme, tone: "text-red-700 dark:text-red-400" },
-            { label: "High", value: high, tone: "text-orange-700 dark:text-orange-400" },
+            {
+              label: "Extreme",
+              value: extreme,
+              tone: "text-red-700 dark:text-red-400",
+            },
+            {
+              label: "High",
+              value: high,
+              tone: "text-orange-700 dark:text-orange-400",
+            },
             {
               label: "Medium",
               value: medium,
               tone: "text-amber-700 dark:text-amber-400",
             },
-            { label: "Low", value: low, tone: "text-emerald-700 dark:text-emerald-400" },
+            {
+              label: "Low",
+              value: low,
+              tone: "text-emerald-700 dark:text-emerald-400",
+            },
           ].map((stat) => (
             <div className="rounded-xl border bg-card px-4 py-3" key={stat.label}>
               <p className="text-xs text-muted-foreground">Residual {stat.label}</p>
@@ -332,7 +427,7 @@ export function RiskRegister() {
                   <th className="px-4 py-2.5 font-medium">Hazard</th>
                   <th className="px-4 py-2.5 font-medium">Site</th>
                   <th className="px-4 py-2.5 font-medium text-center">Inherent</th>
-                  <th className="px-4 py-2.5 font-medium max-w-xs">Controls</th>
+                  <th className="max-w-xs px-4 py-2.5 font-medium">Controls</th>
                   <th className="px-4 py-2.5 font-medium">Legislation</th>
                   <th className="px-4 py-2.5 font-medium text-center">Residual</th>
                   <th className="px-4 py-2.5 font-medium">Owner</th>
@@ -341,7 +436,11 @@ export function RiskRegister() {
               </thead>
               <tbody className="divide-y">
                 {RISKS.map((risk) => (
-                  <tr className="hover:bg-accent/40 transition-colors" key={risk.ref}>
+                  <tr
+                    className="cursor-pointer transition-colors hover:bg-accent/40"
+                    key={risk.ref}
+                    onClick={() => setSelected(risk)}
+                  >
                     <td className="px-4 py-2.5">
                       <span className="font-mono text-xs text-muted-foreground">
                         {risk.ref}
@@ -364,7 +463,7 @@ export function RiskRegister() {
                         {risk.inherent}
                       </span>
                     </td>
-                    <td className="px-4 py-2.5 max-w-xs">
+                    <td className="max-w-xs px-4 py-2.5">
                       <p className="text-xs leading-snug text-muted-foreground">
                         {risk.controls}
                       </p>
@@ -409,6 +508,161 @@ export function RiskRegister() {
             </table>
           </div>
         </div>
+
+        {/* Risk detail overlay */}
+        {selected && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{
+              background: "rgba(0,0,0,0.65)",
+              backdropFilter: "blur(10px)",
+            }}
+            onClick={() => setSelected(null)}
+          >
+            <div
+              className="relative w-full max-w-2xl overflow-hidden rounded-2xl border bg-card shadow-2xl"
+              style={{ maxHeight: "min(90vh, 820px)" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="flex items-start justify-between gap-4 border-b px-6 py-4">
+                <div className="min-w-0">
+                  <h2 className="text-base font-semibold leading-snug">
+                    {selected.ref} —{" "}
+                    {selected.hazard.length > 60
+                      ? `${selected.hazard.slice(0, 60)}…`
+                      : selected.hazard}
+                  </h2>
+                  <p className="mt-0.5 text-sm text-muted-foreground">
+                    {selected.category} · {selected.site}
+                  </p>
+                </div>
+                <button
+                  aria-label="Close"
+                  className="shrink-0 rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                  onClick={() => setSelected(null)}
+                  type="button"
+                >
+                  <svg
+                    className="size-4"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M4 4l8 8M12 4l-8 8" strokeLinecap="round" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Body */}
+              <div
+                className="overflow-y-auto px-6 py-5"
+                style={{ maxHeight: "calc(min(90vh, 820px) - 72px)" }}
+              >
+                <DetailSection label="Risk Assessment">
+                  <DetailRow label="Hazard" value={selected.hazard} />
+                  <DetailRow label="Category" value={selected.category} />
+                  <DetailRow label="Site" value={selected.site} />
+                  <DetailRow
+                    label="Inherent risk"
+                    value={
+                      <span
+                        className={cn(
+                          "rounded-md px-1.5 py-0.5 text-[10px]",
+                          LEVEL_TONE[selected.inherent],
+                        )}
+                      >
+                        {selected.inherent}
+                      </span>
+                    }
+                  />
+                  <DetailRow
+                    label="Residual risk"
+                    value={
+                      <span
+                        className={cn(
+                          "rounded-md px-1.5 py-0.5 text-[10px]",
+                          LEVEL_TONE[selected.residual],
+                        )}
+                      >
+                        {selected.residual}
+                      </span>
+                    }
+                  />
+                  <DetailRow
+                    label="Risk owner"
+                    value={
+                      <div className="flex items-center gap-1.5">
+                        <div className="flex size-5 shrink-0 items-center justify-center rounded-full bg-fill-strong text-[9px] font-medium">
+                          {selected.initials}
+                        </div>
+                        <span>{selected.owner}</span>
+                      </div>
+                    }
+                  />
+                  <DetailRow
+                    label="Review due"
+                    value={selected.reviewDue}
+                    tone={
+                      selected.reviewDue === "Overdue"
+                        ? "text-red-600 dark:text-red-400"
+                        : undefined
+                    }
+                  />
+                  <DetailRow label="Legislation" value={selected.legislation} />
+                </DetailSection>
+
+                <DetailSection label="Hierarchy of Controls">
+                  <div className="space-y-1.5">
+                    {HOC_LEVELS.map((level, i) => {
+                      const indent = (HOC_LEVELS.length - 1 - i) * 18
+                      const isAdmin = level.name === "Administrative controls"
+                      return (
+                        <div
+                          key={level.name}
+                          style={{
+                            marginLeft: `${indent}px`,
+                            borderLeft: `3px solid ${level.color}`,
+                          }}
+                          className="rounded-r-lg bg-muted/30 px-3 py-2"
+                        >
+                          <p
+                            className="text-xs font-semibold"
+                            style={{ color: level.color }}
+                          >
+                            {level.name}
+                          </p>
+                          <p className="mt-0.5 text-[11px] text-muted-foreground">
+                            {level.description}
+                          </p>
+                          {isAdmin && (
+                            <p className="mt-1 text-[11px] italic text-muted-foreground/70">
+                              Controls in use: {selected.controls}
+                            </p>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                </DetailSection>
+
+                <DetailSection label="Control measures in place">
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    {selected.controls}
+                  </p>
+                </DetailSection>
+
+                <DetailSection label="Legislative reference">
+                  <p className="mb-1 text-xs font-semibold">{selected.legislation}</p>
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    {getLegislationDescription(selected.legislation)}
+                  </p>
+                </DetailSection>
+              </div>
+            </div>
+          </div>
+        )}
       </Frame>
     </PageScroll>
   )

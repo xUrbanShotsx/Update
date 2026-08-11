@@ -10,6 +10,9 @@
  * produce a page that says so, not a crash.
  */
 
+import { InsightsCompliance } from "@/components/features/insights-compliance"
+import { InsightsOperations } from "@/components/features/insights-operations"
+import { InsightsWorkforce } from "@/components/features/insights-workforce"
 import { CompetencyMatrix } from "@/components/features/competency-matrix"
 import { OnboardingBoard } from "@/components/features/onboarding-board"
 import { PerformanceTable } from "@/components/features/performance-table"
@@ -258,6 +261,18 @@ export function renderView(view: ModuleView, moduleKey?: string) {
   // Workforce — competency matrix with real checkmarks.
   if (moduleKey === "workforce/competency" && view.kind === "matrix") {
     return <CompetencyMatrix />
+  }
+  // Operations — insights dashboard: hours, plant utilisation, diary completion.
+  if (moduleKey === "operations/insights" && view.kind === "dashboard") {
+    return <InsightsOperations />
+  }
+  // Compliance — insights dashboard: TRIFR, LTIFR, actions, inspection coverage.
+  if (moduleKey === "compliance/insights" && view.kind === "dashboard") {
+    return <InsightsCompliance />
+  }
+  // Workforce — insights dashboard: headcount, expiries, engagement, leave.
+  if (moduleKey === "workforce/insights" && view.kind === "dashboard") {
+    return <InsightsWorkforce />
   }
   switch (view.kind) {
     case "board":

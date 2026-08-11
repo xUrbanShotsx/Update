@@ -1,7 +1,10 @@
+"use client"
+import { useState } from "react"
 import { PageScroll } from "@/components/shared/page-scroll"
 import { Frame, Toolbar } from "@/components/features/views/primitives"
 import { AddSheet, type FieldDef } from "@/components/shared/add-sheet"
 import { cn } from "@/lib/utils"
+import { DetailSection, DetailRow } from "@/components/shared/detail-modal"
 
 type PermitType =
   | "Hot work"
@@ -30,6 +33,87 @@ const STATUS_TONE: Record<PermitStatus, string> = {
   Closed: "bg-fill text-muted-foreground",
   Cancelled: "bg-red-500/15 text-red-700 dark:text-red-400",
   Expired: "bg-amber-500/15 text-amber-700 dark:text-amber-400",
+}
+
+const PERMIT_LOCATION: Record<PermitType, string> = {
+  "Hot work": "Welding bay — Grid D3",
+  Heights: "Level 2 formwork deck",
+  Excavation: "Trench A — northern boundary",
+  "Electrical isolation": "Main switchboard room",
+  "Confined space": "Stormwater pit — manhole M-07",
+  Asbestos: "Roof sheeting zone",
+}
+
+const PERMIT_CONDITIONS: Record<PermitType, string[]> = {
+  "Hot work": [
+    "Fire extinguisher within 1 m of work area at all times",
+    "Hot work watch maintained for 30 min post-completion",
+    "Work area cleared of all combustible materials",
+    "Standby person present throughout duration",
+    "Work stops immediately if wind speed exceeds 15 km/h",
+  ],
+  Heights: [
+    "Safety net or scaffold in place and inspected prior to start",
+    "Fall arrest system worn and anchor points pre-checked",
+    "Exclusion zone established below work area",
+    "Pre-start check of all anchorage points completed",
+    "Buddy system enforced — no solo work at heights",
+  ],
+  Excavation: [
+    "Dial Before You Dig confirmation obtained prior to works",
+    "Shoring or batter angles in place as per design",
+    "No entry into excavations with walls > 1.5 m without shoring",
+    "Gas monitor present and calibrated at site entry",
+    "Traffic management plan active and signage in place",
+  ],
+  "Electrical isolation": [
+    "LOTO (Lockout/Tagout) applied at switchboard before work",
+    "Danger tag applied by authorised person",
+    "Test Before Touch procedure followed",
+    "Qualified electrician only — no unlicensed work permitted",
+    "Stored energy (capacitors, UPS) verified discharged",
+  ],
+  "Confined space": [
+    "Atmospheric testing every 30 min during occupancy",
+    "Standby person stationed outside entry point at all times",
+    "Retrieval equipment (tripod/winch) in place and ready",
+    "Emergency rescue plan confirmed and communicated",
+    "Permit displayed at entry point throughout works",
+  ],
+  Asbestos: [
+    "Asbestos hygienist on site and air monitoring active",
+    "PPE minimum class P2 respirator worn at all times",
+    "Decontamination unit set up at entry/exit point",
+    "Exclusion zone of 10 m radius established and signed",
+    "Waste double-bagged, labelled and segregated for licensed disposal",
+  ],
+}
+
+function getSignoffs(permit: Permit) {
+  const timeParts = permit.issued.split(", ")
+  const issuedDate = timeParts[0] ?? permit.issued
+  const time = timeParts[1] ?? "07:00"
+  const rows: Array<{ name: string; role: string; signed: string; time: string }> = [
+    { name: permit.issuer, role: "Issuing Authority", signed: issuedDate, time },
+    { name: permit.issuedTo, role: "Permit Holder", signed: issuedDate, time },
+  ]
+  if (permit.permitType === "Hot work" || permit.permitType === "Confined space") {
+    rows.push({
+      name: "Luke James",
+      role: "Standby Person / Attendant",
+      signed: issuedDate,
+      time,
+    })
+  }
+  if (permit.permitType === "Asbestos") {
+    rows.push({
+      name: "Dr. Claire Webb",
+      role: "Asbestos Hygienist",
+      signed: issuedDate,
+      time,
+    })
+  }
+  return rows
 }
 
 const PERMITS: Permit[] = [
@@ -236,6 +320,8 @@ const PERMIT_FIELDS: readonly FieldDef[] = [
 ]
 
 export function PermitsRegister() {
+  const [selected, setSelected] = useState<Permit | null>(null)
+
   const active = PERMITS.filter((p) => p.status === "Active")
   const issuedToday = PERMITS.filter((p) => p.issued.startsWith("11 Aug"))
   const expired = PERMITS.filter((p) => p.status === "Expired")
@@ -298,11 +384,12 @@ export function PermitsRegister() {
                 {PERMITS.map((permit) => (
                   <tr
                     className={cn(
-                      "transition-colors hover:bg-accent/40",
+                      "cursor-pointer transition-colors hover:bg-accent/40",
                       (permit.status === "Closed" || permit.status === "Cancelled") &&
                         "opacity-50",
                     )}
                     key={permit.ref}
+                    onClick={() => setSelected(permit)}
                   >
                     <td className="px-4 py-2.5">
                       <span className="font-mono text-xs text-muted-foreground">
@@ -357,6 +444,118 @@ export function PermitsRegister() {
             </table>
           </div>
         </div>
+
+        {selected && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ background: "rgba(0,0,0,0.65)", backdropFilter: "blur(10px)" }}
+            onClick={() => setSelected(null)}
+          >
+            <div
+              className="relative w-full max-w-2xl overflow-hidden rounded-2xl border bg-card shadow-2xl"
+              style={{ maxHeight: "min(90vh, 820px)" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-start justify-between gap-4 border-b px-6 py-4">
+                <div>
+                  <h2 className="text-base font-semibold">
+                    {selected.ref} — {selected.permitType} Permit
+                  </h2>
+                  <p className="mt-0.5 text-sm text-muted-foreground">
+                    {selected.site} · Issued to {selected.issuedTo}
+                  </p>
+                </div>
+                <button
+                  aria-label="Close"
+                  className="shrink-0 rounded-lg p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground"
+                  onClick={() => setSelected(null)}
+                >
+                  <svg
+                    className="size-4"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M4 4l8 8M12 4l-8 8" strokeLinecap="round" />
+                  </svg>
+                </button>
+              </div>
+              <div
+                className="overflow-y-auto px-6 py-5"
+                style={{ maxHeight: "calc(min(90vh, 820px) - 72px)" }}
+              >
+                <DetailSection label="Permit Details">
+                  <DetailRow label="Permit ref" value={selected.ref} />
+                  <DetailRow label="Permit type" value={selected.permitType} />
+                  <DetailRow label="Site" value={selected.site} />
+                  <DetailRow
+                    label="Location / work area"
+                    value={PERMIT_LOCATION[selected.permitType]}
+                  />
+                  <DetailRow label="Issued to" value={selected.issuedTo} />
+                  <DetailRow label="Issuing authority" value={selected.issuer} />
+                  <DetailRow label="Valid from" value={selected.issued} />
+                  <DetailRow label="Expires" value={selected.expires} />
+                  <DetailRow
+                    label="Status"
+                    value={
+                      <span
+                        className={cn(
+                          "rounded-md px-1.5 py-0.5 text-[10px] font-medium",
+                          STATUS_TONE[selected.status],
+                        )}
+                      >
+                        {selected.status}
+                      </span>
+                    }
+                  />
+                </DetailSection>
+
+                <DetailSection label="Conditions & Controls">
+                  <ul className="space-y-1.5">
+                    {PERMIT_CONDITIONS[selected.permitType].map((cond) => (
+                      <li className="flex items-start gap-2 text-xs" key={cond}>
+                        <span className="mt-0.5 shrink-0 text-muted-foreground">•</span>
+                        <span>{cond}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </DetailSection>
+
+                <DetailSection label="SWMS Reference">
+                  <p className="text-xs text-muted-foreground">
+                    SWMS-{selected.ref.replace("PTW-", "")} — {selected.permitType} Safe
+                    Work Method Statement · Revision 3 · Approved by {selected.issuer}
+                  </p>
+                </DetailSection>
+
+                <DetailSection label="Sign-off Record">
+                  <table className="w-full text-xs">
+                    <thead>
+                      <tr className="border-b text-left text-[10px] text-muted-foreground">
+                        <th className="pb-1.5 font-medium">Name</th>
+                        <th className="pb-1.5 font-medium">Role</th>
+                        <th className="pb-1.5 font-medium">Signed</th>
+                        <th className="pb-1.5 font-medium">Time</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y">
+                      {getSignoffs(selected).map((row) => (
+                        <tr key={row.name}>
+                          <td className="py-1.5 font-medium">{row.name}</td>
+                          <td className="py-1.5 text-muted-foreground">{row.role}</td>
+                          <td className="py-1.5 text-muted-foreground">{row.signed}</td>
+                          <td className="py-1.5 text-muted-foreground">{row.time}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </DetailSection>
+              </div>
+            </div>
+          </div>
+        )}
       </Frame>
     </PageScroll>
   )
