@@ -12,8 +12,10 @@
 
 import { ActionsList } from "@/components/features/actions-list"
 import { InspectionsSchedule } from "@/components/features/inspections-schedule"
+import { RiskRegister } from "@/components/features/risk-register"
 import { SafetyBoard } from "@/components/features/safety-board"
 import { SwmsWizard } from "@/components/features/swms-wizard"
+import { ToolboxTalks } from "@/components/features/toolbox-talks"
 import {
   BoardView,
   CalendarView,
@@ -109,6 +111,14 @@ export function renderView(view: ModuleView, moduleKey?: string) {
   // Corrective actions list — cross-register action queue.
   if (moduleKey === "compliance/actions" && view.slug === "list") {
     return <ActionsList />
+  }
+  // Risk register — hierarchy of control, residual scoring.
+  if (moduleKey === "compliance/risk" && view.kind === "table") {
+    return <RiskRegister />
+  }
+  // Toolbox talks — scheduled, delivered, attendance captured on site.
+  if (moduleKey === "compliance/toolbox" && view.kind === "table") {
+    return <ToolboxTalks />
   }
   switch (view.kind) {
     case "board":
