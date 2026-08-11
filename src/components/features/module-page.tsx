@@ -11,7 +11,9 @@
  */
 
 import { ActionsList } from "@/components/features/actions-list"
+import { DefectsBoard } from "@/components/features/defects-board"
 import { InspectionsSchedule } from "@/components/features/inspections-schedule"
+import { ProjectsTable } from "@/components/features/projects-table"
 import { RiskRegister } from "@/components/features/risk-register"
 import { SafetyBoard } from "@/components/features/safety-board"
 import { SwmsWizard } from "@/components/features/swms-wizard"
@@ -119,6 +121,14 @@ export function renderView(view: ModuleView, moduleKey?: string) {
   // Toolbox talks — scheduled, delivered, attendance captured on site.
   if (moduleKey === "compliance/toolbox" && view.kind === "table") {
     return <ToolboxTalks />
+  }
+  // Projects register — the spine every other operations record hangs off.
+  if (moduleKey === "operations/projects" && view.kind === "table") {
+    return <ProjectsTable />
+  }
+  // Defects board — NCR/defects kanban, location-pinned and assigned.
+  if (moduleKey === "operations/defects" && view.kind === "board") {
+    return <DefectsBoard />
   }
   switch (view.kind) {
     case "board":
