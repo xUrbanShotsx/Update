@@ -498,7 +498,7 @@ export const DOMAINS: readonly [Domain, ...Domain[]] = [
           {
             slug: "swms",
             label: "SWMS",
-            children: [LIST_VIEW, { slug: "versions", label: "Versions" }],
+            children: [{ slug: "issue", label: "Issue" }, LIST_VIEW, { slug: "versions", label: "Versions" }],
           },
           {
             slug: "permits",

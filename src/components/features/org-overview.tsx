@@ -1,3 +1,4 @@
+import { ComplianceOverview } from "@/components/features/compliance-overview"
 import {
   OverviewView,
   type OverviewMetric,
@@ -35,6 +36,9 @@ export function OrgOverview({
   readonly domain: Domain
   readonly org: Org
 }) {
+  if (domain.slug === "compliance") {
+    return <ComplianceOverview domain={domain} org={org} />
+  }
   const crew = org.locations.reduce((total, location) => total + location.crew, 0)
   const open = org.locations.reduce(
     (total, location) => total + location.openIncidents,

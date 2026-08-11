@@ -10,6 +10,7 @@
  * produce a page that says so, not a crash.
  */
 
+import { SwmsWizard } from "@/components/features/swms-wizard"
 import {
   BoardView,
   CalendarView,
@@ -89,7 +90,11 @@ const moduleTags = (module: Module, view: ModuleView): PageTag[] => [
  *  Exported for the one page that is an entity rather than a section — a project
  *  — which still wants its shape chosen by the catalogue rather than picked in
  *  its own file, or the catalogue would be lying about one module. */
-export function renderView(view: ModuleView) {
+export function renderView(view: ModuleView, moduleKey?: string) {
+  // SWMS Issue wizard is the AI generation flagship — render it directly.
+  if (moduleKey === "compliance/swms" && view.slug === "issue") {
+    return <SwmsWizard />
+  }
   switch (view.kind) {
     case "board":
       return <BoardView view={view} />
@@ -180,6 +185,8 @@ export function OrgModulePage({
         }))
       : undefined
 
+  const moduleKey = `${domain.slug}/${section.slug}`
+
   return (
     <>
       <PageHeader
@@ -188,7 +195,7 @@ export function OrgModulePage({
         title={section.label}
         views={views}
       />
-      {renderView(view)}
+      {renderView(view, moduleKey)}
     </>
   )
 }

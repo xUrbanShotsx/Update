@@ -873,6 +873,19 @@ export const MODULES: Record<string, Module> = {
     tier: "stakes",
     views: [
       {
+        slug: "issue",
+        label: "Issue",
+        kind: "wizard",
+        groups: [
+          "Activity",
+          "Hazards and controls",
+          "Controls in place",
+          "Emergency procedures",
+          "Crew",
+          "Authorisation",
+        ],
+      },
+      {
         label: "SWMS",
         kind: "split",
         rows: [
