@@ -10,6 +10,9 @@
  * produce a page that says so, not a crash.
  */
 
+import { CompetencyMatrix } from "@/components/features/competency-matrix"
+import { OnboardingBoard } from "@/components/features/onboarding-board"
+import { PerformanceTable } from "@/components/features/performance-table"
 import { PhotosGallery } from "@/components/features/photos-gallery"
 import { QualityRegister } from "@/components/features/quality-register"
 import { TimesheetsGrid } from "@/components/features/timesheets-grid"
@@ -243,6 +246,18 @@ export function renderView(view: ModuleView, moduleKey?: string) {
   // Operations — site photo gallery.
   if (moduleKey === "operations/photos" && view.kind === "gallery") {
     return <PhotosGallery />
+  }
+  // Workforce — onboarding pipeline board.
+  if (moduleKey === "workforce/onboarding" && view.kind === "board") {
+    return <OnboardingBoard />
+  }
+  // Workforce — performance review table.
+  if (moduleKey === "workforce/performance" && view.kind === "table") {
+    return <PerformanceTable />
+  }
+  // Workforce — competency matrix with real checkmarks.
+  if (moduleKey === "workforce/competency" && view.kind === "matrix") {
+    return <CompetencyMatrix />
   }
   switch (view.kind) {
     case "board":

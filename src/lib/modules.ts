@@ -1219,7 +1219,6 @@ export const MODULES: Record<string, Module> = {
     summary: "Requests, approvals, balances and the RDO calendar the roster has to read.",
     tier: "parity",
     views: [
-      { label: "Calendar", kind: "calendar" },
       {
         slug: "list",
         label: "Requests",
@@ -1235,6 +1234,7 @@ export const MODULES: Record<string, Module> = {
           "Status",
         ],
       },
+      { label: "Calendar", kind: "calendar" },
     ],
   },
 
