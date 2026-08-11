@@ -10,6 +10,8 @@
  * produce a page that says so, not a crash.
  */
 
+import { ActionsList } from "@/components/features/actions-list"
+import { InspectionsSchedule } from "@/components/features/inspections-schedule"
 import { SafetyBoard } from "@/components/features/safety-board"
 import { SwmsWizard } from "@/components/features/swms-wizard"
 import {
@@ -99,6 +101,14 @@ export function renderView(view: ModuleView, moduleKey?: string) {
   // Safety Board shows real incident cards, not scaffold bars.
   if (moduleKey === "compliance/safety" && view.kind === "board") {
     return <SafetyBoard />
+  }
+  // Inspections schedule — the templated/scored inspection list.
+  if (moduleKey === "compliance/inspections" && view.slug === "list") {
+    return <InspectionsSchedule />
+  }
+  // Corrective actions list — cross-register action queue.
+  if (moduleKey === "compliance/actions" && view.slug === "list") {
+    return <ActionsList />
   }
   switch (view.kind) {
     case "board":
