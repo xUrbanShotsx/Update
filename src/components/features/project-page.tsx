@@ -1,6 +1,6 @@
-import { renderView } from "@/components/features/module-page"
+import { ProjectDetail } from "@/components/features/project-detail"
 import { PageHeader, type PageTag } from "@/components/shared/page-header"
-import { moduleFor, TIER_LABELS, VIEW_LABELS } from "@/lib/modules"
+import { moduleFor, TIER_LABELS } from "@/lib/modules"
 import { orgHref, type Domain, type Project } from "@/lib/scope"
 
 /**
@@ -24,13 +24,10 @@ export function ProjectPage({
   readonly project: Project
 }) {
   const module = moduleFor(domain.slug, "project")
-  const view = module?.views[0]
 
   const tags: PageTag[] = [
     { label: project.stage, tone: "solid" },
     ...(module ? [{ label: TIER_LABELS[module.tier], tone: "muted" as const }] : []),
-    ...(view ? [{ label: VIEW_LABELS[view.kind], tone: "muted" as const }] : []),
-    { label: "Scaffold", tone: "outline" },
   ]
 
   return (
@@ -40,14 +37,10 @@ export function ProjectPage({
         tags={tags}
         title={project.name}
         views={[
-          // The way back to the register, as a view rather than a Back row: the
-          // panel never left, so there is nothing to climb out of — this is the
-          // same records at two altitudes, which is what the header's control is
-          // for everywhere else in the app.
           { label: "All projects", href: orgHref(domain, "projects"), active: false },
         ]}
       />
-      {view ? renderView(view) : null}
+      <ProjectDetail project={project} />
     </>
   )
 }

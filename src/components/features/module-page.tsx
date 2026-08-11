@@ -364,6 +364,7 @@ export function SiteModulePage({
   }
 
   const view = module.siteView ?? module.views[0]
+  const moduleKey = `${domain.slug}/${section.slug}`
 
   return (
     <>
@@ -376,7 +377,7 @@ export function SiteModulePage({
         tags={moduleTags(module, view)}
         title={section.label}
       />
-      {renderView(view)}
+      {renderView(view, moduleKey)}
     </>
   )
 }
