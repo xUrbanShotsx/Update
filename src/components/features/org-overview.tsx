@@ -1,3 +1,4 @@
+import { AdminOverview } from "@/components/features/admin-overview"
 import { ComplianceOverview } from "@/components/features/compliance-overview"
 import { OperationsOverview } from "@/components/features/operations-overview"
 import { WorkforceOverview } from "@/components/features/workforce-overview"
@@ -46,6 +47,9 @@ export function OrgOverview({
   }
   if (domain.slug === "workforce") {
     return <WorkforceOverview domain={domain} org={org} />
+  }
+  if (domain.slug === "admin") {
+    return <AdminOverview domain={domain} org={org} />
   }
   const crew = org.locations.reduce((total, location) => total + location.crew, 0)
   const open = org.locations.reduce(

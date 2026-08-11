@@ -11,18 +11,33 @@
  */
 
 import { ActionsList } from "@/components/features/actions-list"
+import { ChemicalsRegister } from "@/components/features/chemicals-register"
+import { ContractorsRegister } from "@/components/features/contractors-register"
+import { DocumentsLibrary } from "@/components/features/documents-library"
+import { EmergencyProcedures } from "@/components/features/emergency-procedures"
+import { EnvironmentRegister } from "@/components/features/environment-register"
+import { PermitsRegister } from "@/components/features/permits-register"
+import { SafetyIncidentTable } from "@/components/features/safety-incident-table"
 import { AssetsRegister } from "@/components/features/assets-register"
+import { AwardRates } from "@/components/features/award-rates"
 import { ClaimsRegister } from "@/components/features/claims-register"
 import { DefectsBoard } from "@/components/features/defects-board"
 import { DeliveriesList } from "@/components/features/deliveries-list"
 import { DiaryFeed } from "@/components/features/diary-feed"
+import { InductionsTable } from "@/components/features/inductions-table"
+import { InjuryCases } from "@/components/features/injury-cases"
 import { InspectionsSchedule } from "@/components/features/inspections-schedule"
+import { LeaveRequests } from "@/components/features/leave-requests"
+import { MedicalsTable } from "@/components/features/medicals-table"
+import { PeopleTable } from "@/components/features/people-table"
+import { PpeRegister } from "@/components/features/ppe-register"
 import { ProjectsTable } from "@/components/features/projects-table"
 import { RiskRegister } from "@/components/features/risk-register"
 import { SafetyBoard } from "@/components/features/safety-board"
 import { SiteAccessTable } from "@/components/features/site-access-table"
 import { SwmsWizard } from "@/components/features/swms-wizard"
 import { ToolboxTalks } from "@/components/features/toolbox-talks"
+import { TrainingTickets } from "@/components/features/training-tickets"
 import {
   BoardView,
   CalendarView,
@@ -154,6 +169,66 @@ export function renderView(view: ModuleView, moduleKey?: string) {
   // Progress claims register.
   if (moduleKey === "operations/claims" && view.slug === "list") {
     return <ClaimsRegister />
+  }
+  // Workforce — people directory.
+  if (moduleKey === "workforce/people" && view.kind === "table") {
+    return <PeopleTable />
+  }
+  // Workforce — induction records.
+  if (moduleKey === "workforce/inductions" && view.kind === "table") {
+    return <InductionsTable />
+  }
+  // Workforce — training tickets / licences.
+  if (moduleKey === "workforce/training" && view.kind === "table") {
+    return <TrainingTickets />
+  }
+  // Workforce — leave requests list.
+  if (moduleKey === "workforce/leave" && view.slug === "list") {
+    return <LeaveRequests />
+  }
+  // Workforce — injury / RTW cases.
+  if (moduleKey === "workforce/injury" && view.kind === "table") {
+    return <InjuryCases />
+  }
+  // Workforce — PPE issue register.
+  if (moduleKey === "workforce/ppe" && view.kind === "table") {
+    return <PpeRegister />
+  }
+  // Workforce — medical records.
+  if (moduleKey === "workforce/medicals" && view.kind === "table") {
+    return <MedicalsTable />
+  }
+  // Workforce — award / pay rates.
+  if (moduleKey === "workforce/rates" && view.kind === "table") {
+    return <AwardRates />
+  }
+  // Compliance — safety incident table (register view; board is SafetyBoard).
+  if (moduleKey === "compliance/safety" && view.kind === "table") {
+    return <SafetyIncidentTable />
+  }
+  // Compliance — permit to work register.
+  if (moduleKey === "compliance/permits" && view.kind === "table") {
+    return <PermitsRegister />
+  }
+  // Compliance — subcontractor / contractor register.
+  if (moduleKey === "compliance/contractors" && view.kind === "table") {
+    return <ContractorsRegister />
+  }
+  // Compliance — hazardous chemicals / SDS register.
+  if (moduleKey === "compliance/chemicals" && view.kind === "table") {
+    return <ChemicalsRegister />
+  }
+  // Compliance — environmental aspects register.
+  if (moduleKey === "compliance/environment" && view.kind === "table") {
+    return <EnvironmentRegister />
+  }
+  // Compliance — emergency response procedures.
+  if (moduleKey === "compliance/emergency") {
+    return <EmergencyProcedures />
+  }
+  // Compliance — document management library.
+  if (moduleKey === "compliance/documents" && view.kind === "documents") {
+    return <DocumentsLibrary />
   }
   switch (view.kind) {
     case "board":
